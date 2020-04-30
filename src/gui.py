@@ -23,29 +23,37 @@ class Figure(ABC):
 class Square(Figure):
     def __init__(self, canvas, x, y, size, content=None, color=None):
         super(Square, self).__init__(canvas, x, y, size, size, content, color)
-        self.size=size
+        self.size = size
 
     def __repr__(self):
         return f'Square: x={self.x},y={self.y}, size={self.size}, color={self.color}'
 
     def draw(self):
-        self.canvas.create_rectangle(self.x,self.y,self.x+self.size,self.y+self.size,fill=self.color, width=1)
+        self.canvas.create_rectangle(self.x, self.y, self.x + self.size, self.y + self.size, fill=self.color, width=1)
 
-class Board:
+
+
+class Board(ABC):
     def __init__(self, canvas, width, height, squares, squareSize):
         self.canvas = canvas
         self.width = width
         self.height = height
         self.squareSize = squareSize
         self.squares = []
-        colors = ('green','red')
+        colors = ('black', 'white')
         colorIdx = 0
-        for x in range(int(squares**0.5)):
+        for x in range(int(squares ** 0.5)):
             row = []
-            for y in range(int(squares**0.5)):
-                row.append(Square(self.canvas, y*self.squareSize, x*self.squareSize, self.squareSize, color=colors[(colorIdx:=(colorIdx+1)%len(colors))]))
+            colorIdx = int(not colorIdx)
+            for y in range(int(squares ** 0.5)):
+                row.append(Square(self.canvas, y * self.squareSize, x * self.squareSize, self.squareSize,
+                                  color=colors[(colorIdx := (colorIdx + 1) % len(colors))]))
                 row[-1].draw()
             self.squares.append(row)
+
+    # @abstractmethod
+    # def updateSquare(self, ):
+    #     pass
 
 
 class Window(tk.Tk):
@@ -58,7 +66,7 @@ class Window(tk.Tk):
         self.title(title)
         self.geometry(f'{width}x{height}')
 
-        self.board = Board(self.canvas, width, height,81,50)
+        self.board = Board(self.canvas, width, height, 64, 70)
 
     def run(self):
         self.mainloop()

@@ -37,3 +37,7 @@ class Game(ABC):
     @abstractmethod
     def evaluate(self, heuristic: Heuristic) -> float:
         pass
+
+    @abstractmethod
+    def updateState(self, state, move:Move):
+        pass
