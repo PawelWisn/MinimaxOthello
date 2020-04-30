@@ -7,10 +7,15 @@ class Heuristic(ABC):
         pass
 
 
-class Move:
-    def __init__(self, src, dest):
-        self.src = src
+class Move(ABC):
+    def __init__(self, dest, src=None):
         self.dest = dest
+        self.src = src
+
+    @staticmethod
+    @abstractmethod
+    def isLegal(dest, src=None) -> bool:
+        pass
 
 
 class Game(ABC):
