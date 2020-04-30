@@ -1,10 +1,9 @@
 import tkinter as tk
 from abc import ABC, abstractmethod
 
-
 class Figure(ABC):
-    def __init__(self, canvas, x, y, width, height, content=None, color=None):
-        self.canvas = canvas
+    def __init__(self, root, x, y, width, height, content=None, color=None):
+        self.root = root
         self.x = x
         self.y = y
         self.width = width
@@ -21,17 +20,18 @@ class Figure(ABC):
 
 
 class Square(Figure):
-    def __init__(self, canvas, x, y, size, content=None, color=None):
-        super(Square, self).__init__(canvas, x, y, size, size, content, color)
+    def __init__(self, root, x, y, size, content=None, color=None):
+        super(Square, self).__init__(root, x, y, size, size, content, color)
         self.size = size
 
     def __repr__(self):
         return f'Square: x={self.x},y={self.y}, size={self.size}, color={self.color}'
 
     def draw(self):
-        self.canvas.create_rectangle(self.x, self.y, self.x + self.size, self.y + self.size, fill=self.color, width=1)
-
-
+        self.button = tk.Button(self.root)
+        self.photo=tk.PhotoImage(file=f'pictures/{self.color}.png')
+        self.button.config(image=self.photo, width=self.size, height=self.size)
+        self.button.grid(row=self.x,column=self.y)
 
 class Board(ABC):
     def __init__(self, canvas, width, height, squares, squareSize):
@@ -40,7 +40,7 @@ class Board(ABC):
         self.height = height
         self.squareSize = squareSize
         self.squares = []
-        colors = ('black', 'white')
+        colors = ('darkgreen', 'lightgreen')
         colorIdx = 0
         for x in range(int(squares ** 0.5)):
             row = []
