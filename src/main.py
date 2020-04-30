@@ -1,3 +1,6 @@
-from gui import *
+from src.gui import *
+from src.reversi import ReversiSquare, ReversiBoard
 
-Window(1150,800,'Reversi').run()
+window = Window(1150,800,'Reversi')
+window.build(ReversiBoard,ReversiSquare,64,100)
+window.run()

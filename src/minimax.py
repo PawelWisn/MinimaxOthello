@@ -8,13 +8,14 @@ class Heuristic(ABC):
 
 
 class Move(ABC):
-    def __init__(self, dest, src=None):
+    def __init__(self, dest, player, src=None):
         self.dest = dest
         self.src = src
+        self.player = 'Black'
 
     @staticmethod
     @abstractmethod
-    def isLegal(dest, src=None) -> bool:
+    def isLegal(dest, player, src=None) -> bool:
         pass
 
 
