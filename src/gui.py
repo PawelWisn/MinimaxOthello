@@ -1,5 +1,6 @@
 import tkinter as tk
 from abc import ABC, abstractmethod
+from PIL import Image, ImageTk
 
 class Figure(ABC):
     def __init__(self, root, x, y, width, height, content=None, color=None):
@@ -29,9 +30,15 @@ class Square(Figure):
 
     def draw(self):
         self.button = tk.Button(self.root)
-        self.photo=tk.PhotoImage(file=f'pictures/{self.color}.png')
+        self.photo = Image.open(f'pictures/lightgreen-black.png')
+        self.photo = self.photo.resize((self.size,self.size),Image.ANTIALIAS)
+        self.photo = ImageTk.PhotoImage(self.photo)
+        # self.photo = tk.PhotoImage(file=f'pictures/lightgreen-black.png')
+        # self.photo = tk.PhotoImage(file=f'pictures/{self.color}.png')
         self.button.config(image=self.photo, width=self.size, height=self.size)
-        self.button.grid(row=self.x,column=self.y)
+
+        self.button.grid(row=self.x, column=self.y)
+
 
 class Board(ABC):
     def __init__(self, canvas, width, height, squares, squareSize):
@@ -66,7 +73,7 @@ class Window(tk.Tk):
         self.title(title)
         self.geometry(f'{width}x{height}')
 
-        self.board = Board(self.canvas, width, height, 64, 70)
+        self.board = Board(self.canvas, width, height, 64, 50)
 
     def run(self):
         self.mainloop()
