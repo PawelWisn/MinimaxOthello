@@ -38,6 +38,7 @@ class Square(Figure):
         self.button.grid(row=self.x, column=self.y)
 
     def update(self, player:str)->None:
+        if player: player = player[0].upper()+player[1:]
         self.photo = Image.open(f'pictures/{self.kind}{player}.png')
         self.photo = self.photo.resize((self.size, self.size), Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.photo)
@@ -66,9 +67,9 @@ class Board(ABC):
                 row[-1].draw()
             self.squares.append(row)
 
-    # @abstractmethod
-    # def updateSquare(self, move:Move)->None:
-    #     pass
+    @abstractmethod
+    def updateSquare(self, move:Move)->None:
+        pass
 
 
 class Window(tk.Tk):

@@ -4,6 +4,7 @@ from src.minimax import Move
 class ReversiSquare(Square):
     def handler(self):
         print('handling')
+        self.update('white')
 
 
 class ReversiBoard(Board):
