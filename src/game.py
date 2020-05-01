@@ -8,7 +8,7 @@ class abcHeuristic(ABC):
 
 
 class abcMove(ABC):
-    def __init__(self, dest, player=None, src=None):
+    def __init__(self, dest, player:str=None, src=None):
         self.dest = dest
         self.src = src
         self.player = player
@@ -20,17 +20,17 @@ class abcMove(ABC):
 
 
 class abcBoard(ABC):
-    def __init__(self, root, game, square, squares, squareSize):
+    def __init__(self, root, game, square, squaresNum, squareSize):
         self.game = game
         self.root = root
         self.squareSize = squareSize
         self.squares = []
         squareImgs = ('darkgreen', 'lightgreen')
         imgIdx = 0
-        for x in range(int(squares ** 0.5)):
+        for x in range(int(squaresNum ** 0.5)):
             row = []
             imgIdx = int(not imgIdx)
-            for y in range(int(squares ** 0.5)):
+            for y in range(int(squaresNum ** 0.5)):
                 row.append(square(self.root, y, x, self.squareSize,
                                   squareImg=squareImgs[(imgIdx := (imgIdx + 1) % len(squareImgs))],
                                   action=self.game.action))
@@ -46,10 +46,13 @@ class abcBoard(ABC):
 
 
 class abcGame(ABC):
-    def __init__(self, window, board, square, squaresNum, squareSize, nextPlayer, modeVar, depthVar, heurVarP1, heurVarP2):
+    def __init__(self, window, board, square, squaresNum, squareSize, firstPlayer, secondPlayer, modeVar, depthVar, heurVarP1,
+                 heurVarP2):
         self.window = window
         self.board = board(window, self, square, squaresNum, squareSize)
-        self.nextPlayer=nextPlayer
+        self.firstPlayer = Player(firstPlayer)
+        self.secondPlayer = Player(secondPlayer)
+        self.currentPlayer = self.firstPlayer
         self.modeVar = modeVar
         self.depthVar = depthVar
         self.heurVarP1 = heurVarP1
@@ -63,9 +66,10 @@ class abcGame(ABC):
     # def getMoves(self) -> list:
     #     pass
     #
-    # @abstractmethod
-    # def gameOver(self) -> int:
-    #     pass
+    @abstractmethod
+    def gameOver(self) -> int:
+        pass
+
     #
     # @abstractmethod
     # def evaluate(self, heuristic: abcHeuristic) -> float:
