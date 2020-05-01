@@ -49,15 +49,16 @@ class Window(tk.Tk):
         self.restartButton = tk.Button(self, text='Restart')
         self.restartButton.grid(row=2, column=9, sticky=tk.W)
 
-        self.aiVar = tk.IntVar()
-        self.aiLabel = tk.Label(self, text="Mode:")
-        self.aiLabel.grid(row=3, column=9, sticky=tk.W)
-        self.aiRadio1 = tk.Radiobutton(self, text="PvsP", variable=self.aiVar, value=1)
-        self.aiRadio2 = tk.Radiobutton(self, text="PvsAI", variable=self.aiVar, value=2)
-        self.aiRadio3 = tk.Radiobutton(self, text="AIvsAI", variable=self.aiVar, value=3)
-        self.aiRadio1.grid(row=3, column=10)
-        self.aiRadio2.grid(row=3, column=11)
-        self.aiRadio3.grid(row=3, column=12)
+        self.modeVar = tk.IntVar()
+        self.modeLabel = tk.Label(self, text="Mode:")
+        self.modeLabel.grid(row=3, column=9, sticky=tk.W)
+        self.modeRadio1 = tk.Radiobutton(self, text="PvsP", variable=self.modeVar, value=0)
+        self.modeRadio2 = tk.Radiobutton(self, text="PvsAI", variable=self.modeVar, value=1)
+        self.modeRadio3 = tk.Radiobutton(self, text="AIvsAI", variable=self.modeVar, value=2)
+        self.modeVar.set(0)
+        self.modeRadio1.grid(row=3, column=10)
+        self.modeRadio2.grid(row=3, column=11)
+        self.modeRadio3.grid(row=3, column=12)
 
         self.depthLabel = tk.Label(self, text="Depth:")
         self.depthLabel.grid(row=5, column=9, sticky=tk.W)
@@ -66,16 +67,27 @@ class Window(tk.Tk):
         self.depthVar.set('5')
         self.depthInput.grid(row=5, column=10, sticky=tk.W)
 
-        self.heurVar = tk.IntVar()
-        self.heurLabel = tk.Label(self, text="Heuristic:")
-        self.heurLabel.grid(row=7, column=9)
-        self.heuristicRadio1 = tk.Radiobutton(self, text="Naive", variable=self.heurVar, value=1)
-        self.heuristicRadio2 = tk.Radiobutton(self, text="Advanced", variable=self.heurVar, value=2)
-        self.heuristicRadio1.grid(row=7, column=10)
-        self.heuristicRadio2.grid(row=7, column=11)
-        self.heurVar.set(1)
+        self.heurVarP1 = tk.IntVar()
+        self.heurLabelP1 = tk.Label(self, text="Heuristic\nAI 1:")
+        self.heurLabelP1.grid(row=6, column=9)
+        self.heuristicRadio1P1 = tk.Radiobutton(self, text="Naive", variable=self.heurVarP1, value=0)
+        self.heuristicRadio2P1 = tk.Radiobutton(self, text="Advanced", variable=self.heurVarP1, value=1)
+        self.heuristicRadio1P1.grid(row=6, column=10)
+        self.heuristicRadio2P1.grid(row=6, column=11)
+        self.heurVarP1.set(0)
 
-        return self.heurVar, self.depthVar, self.aiVar
+        self.heurVarP2 = tk.IntVar()
+        self.heurLabelP2 = tk.Label(self, text="Heuristic\nAI 2:")
+        self.heurLabelP2.grid(row=7, column=9)
+        self.heuristicRadio1P2 = tk.Radiobutton(self, text="Naive", variable=self.heurVarP2, value=0)
+        self.heuristicRadio2P2 = tk.Radiobutton(self, text="Advanced", variable=self.heurVarP2, value=1)
+        self.heuristicRadio1P2.grid(row=7, column=10)
+        self.heuristicRadio2P2.grid(row=7, column=11)
+        self.heurVarP2.set(0)
+
+        return self.modeVar, self.depthVar, self.heurVarP1, self.heurVarP2
 
     def run(self):
         self.mainloop()
+
+

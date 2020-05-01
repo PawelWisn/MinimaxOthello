@@ -20,13 +20,11 @@ class abcMove(ABC):
 
 
 class abcBoard(ABC):
-    def __init__(self, root, square, squares, squareSize, hvar, entry, ai):
+    def __init__(self, root, game, square, squares, squareSize):
+        self.game = game
         self.root = root
         self.squareSize = squareSize
         self.squares = []
-        self.hvar = hvar
-        self.entry = entry
-        self.ai = ai
         squareImgs = ('darkgreen', 'lightgreen')
         imgIdx = 0
         for x in range(int(squares ** 0.5)):
@@ -35,9 +33,10 @@ class abcBoard(ABC):
             for y in range(int(squares ** 0.5)):
                 row.append(square(self.root, y, x, self.squareSize,
                                   squareImg=squareImgs[(imgIdx := (imgIdx + 1) % len(squareImgs))],
-                                  action=self.action))
+                                  action=self.game.action))
                 row[-1].draw()
             self.squares.append(row)
+
 
     def getSquare(self, x, y):
         return self.squares[x][y]
@@ -46,32 +45,39 @@ class abcBoard(ABC):
     def updateSquare(self, move: abcMove) -> None:
         pass
 
-    @abstractmethod
-    def action(self, square):
-        pass
 
 class abcGame(ABC):
-    def __init__(self, board):
-        self.board = board
+    def __init__(self, window, board, square, squaresNum, squareSize, modeVar, depthVar, heurVarP1, heurVarP2):
+        self.window = window
+        self.board = board(window, self, square, squaresNum, squareSize)
+        self.modeVar = modeVar
+        self.depthVar = depthVar
+        self.heurVarP1 = heurVarP1
+        self.heurVarP2 = heurVarP2
+
+
+    # @abstractmethod
+    # def makeMove(self, move: abcMove) -> None:
+    #     pass
+    #
+    # @abstractmethod
+    # def getMoves(self) -> list:
+    #     pass
+    #
+    # @abstractmethod
+    # def gameOver(self) -> int:
+    #     pass
+    #
+    # @abstractmethod
+    # def evaluate(self, heuristic: abcHeuristic) -> float:
+    #     pass
+    #
+    # @abstractmethod
+    # def updateState(self, state, move: abcMove):
+    #     pass
 
     @abstractmethod
-    def makeMove(self, move: abcMove) -> None:
-        pass
-
-    @abstractmethod
-    def getMoves(self) -> list:
-        pass
-
-    @abstractmethod
-    def gameOver(self) -> int:
-        pass
-
-    @abstractmethod
-    def evaluate(self, heuristic: abcHeuristic) -> float:
-        pass
-
-    @abstractmethod
-    def updateState(self, state, move: abcMove):
+    def action(self, square):
         pass
 
 class Player:

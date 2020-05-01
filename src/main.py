@@ -1,8 +1,9 @@
 from src.gui import Window, Square
-from src.reversi import Board
+from src.reversi import Board, Game
 
 window = Window(1000, 750, 'Reversi')
-hvar, entry, ai = window.build()
-board = Board(window, Square, 64, 75 , hvar, entry, ai)
+modeVar, depthVar, heurVarP1, heurVarP2 = window.build()
+game = Game(window, Board, Square, 64, 75, modeVar, depthVar, heurVarP1, heurVarP2)
+
 
 window.run()
