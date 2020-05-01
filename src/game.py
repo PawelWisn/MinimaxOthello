@@ -8,14 +8,14 @@ class abcHeuristic(ABC):
 
 
 class abcMove(ABC):
-    def __init__(self, dest, player, src=None):
+    def __init__(self, dest, player=None, src=None):
         self.dest = dest
         self.src = src
         self.player = player
 
     @staticmethod
     @abstractmethod
-    def isLegal(board, dest, player, src=None) -> bool:
+    def isLegal(board, dest, player=None, src=None) -> bool:
         pass
 
 
@@ -37,7 +37,6 @@ class abcBoard(ABC):
                 row[-1].draw()
             self.squares.append(row)
 
-
     def getSquare(self, x, y):
         return self.squares[x][y]
 
@@ -47,19 +46,19 @@ class abcBoard(ABC):
 
 
 class abcGame(ABC):
-    def __init__(self, window, board, square, squaresNum, squareSize, modeVar, depthVar, heurVarP1, heurVarP2):
+    def __init__(self, window, board, square, squaresNum, squareSize, nextPlayer, modeVar, depthVar, heurVarP1, heurVarP2):
         self.window = window
         self.board = board(window, self, square, squaresNum, squareSize)
+        self.nextPlayer=nextPlayer
         self.modeVar = modeVar
         self.depthVar = depthVar
         self.heurVarP1 = heurVarP1
         self.heurVarP2 = heurVarP2
 
+    @abstractmethod
+    def makeMove(self, move: abcMove) -> None:
+        pass
 
-    # @abstractmethod
-    # def makeMove(self, move: abcMove) -> None:
-    #     pass
-    #
     # @abstractmethod
     # def getMoves(self) -> list:
     #     pass
@@ -80,9 +79,10 @@ class abcGame(ABC):
     def action(self, square):
         pass
 
+
 class Player:
     def __init__(self, type):
-        self.type=type
+        self.type = type
 
     def __str__(self):
         return "Player: " + self.type

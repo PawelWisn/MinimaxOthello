@@ -15,7 +15,7 @@ class Square:
         self.action = action
 
     def __repr__(self):
-        return f'Square: x={self.x}, y={self.y}, size={self.size}, kind={self.kind}, img={self.photo}'
+        return f'Square: x={self.x}, y={self.y}, size={self.size}, kind={self.kind}, taken={self.occupied}'
 
     def draw(self) -> None:
         self.button = tk.Button(self.root, command=self.handle)
