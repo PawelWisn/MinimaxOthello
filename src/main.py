@@ -1,6 +1,8 @@
-from src.gui import Window
-from src.reversi import Square, Board
+from src.gui import Window, Square
+from src.reversi import Board
 
 window = Window(1000, 750, 'Reversi')
-board = Board(window, Square, 64, 75)
+hvar, entry, ai = window.build()
+board = Board(window, Square, 64, 75 , hvar, entry, ai)
+
 window.run()

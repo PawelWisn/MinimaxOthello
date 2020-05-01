@@ -20,10 +20,13 @@ class abcMove(ABC):
 
 
 class abcBoard(ABC):
-    def __init__(self, root, square, squares, squareSize):
+    def __init__(self, root, square, squares, squareSize, hvar, entry, ai):
         self.root = root
         self.squareSize = squareSize
         self.squares = []
+        self.hvar = hvar
+        self.entry = entry
+        self.ai = ai
         squareImgs = ('darkgreen', 'lightgreen')
         imgIdx = 0
         for x in range(int(squares ** 0.5)):
@@ -31,7 +34,8 @@ class abcBoard(ABC):
             imgIdx = int(not imgIdx)
             for y in range(int(squares ** 0.5)):
                 row.append(square(self.root, y, x, self.squareSize,
-                                  squareImg=squareImgs[(imgIdx := (imgIdx + 1) % len(squareImgs))]))
+                                  squareImg=squareImgs[(imgIdx := (imgIdx + 1) % len(squareImgs))],
+                                  action=self.action))
                 row[-1].draw()
             self.squares.append(row)
 
@@ -42,10 +46,13 @@ class abcBoard(ABC):
     def updateSquare(self, move: abcMove) -> None:
         pass
 
+    @abstractmethod
+    def action(self, square):
+        pass
 
 class abcGame(ABC):
-    def __init__(self, state):
-        self.state = state
+    def __init__(self, board):
+        self.board = board
 
     @abstractmethod
     def makeMove(self, move: abcMove) -> None:
@@ -66,3 +73,10 @@ class abcGame(ABC):
     @abstractmethod
     def updateState(self, state, move: abcMove):
         pass
+
+class Player:
+    def __init__(self, type):
+        self.type=type
+
+    def __str__(self):
+        return "Player: " + self.type
