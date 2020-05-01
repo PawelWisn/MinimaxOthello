@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class abcHeuristic(ABC):
     @abstractmethod
-    def eval(self, state:list) -> float:
+    def eval(self, state:list) -> int:
         pass
 
 

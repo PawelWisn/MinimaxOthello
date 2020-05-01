@@ -24,6 +24,8 @@ class Game(abcGame):
     def __init__(self, *args, **kwargs):
         super(Game, self).__init__(*args, **kwargs)
         self.passCounter = 0
+        self.coinParityHeur = CoinParity()
+        self.weightsHeur = Weights()
 
     def action(self, square):
         print(repr(square))
@@ -49,7 +51,7 @@ class Game(abcGame):
 
 
 class CoinParity(abcHeuristic):
-    def eval(self, state: list) -> float:
+    def eval(self, state: list) -> int:
         black = 0
         white = 0
         for row in state:
@@ -61,13 +63,25 @@ class CoinParity(abcHeuristic):
                     black += 1
         return white - black
 
+
 class Weights(abcHeuristic):
     def __init__(self, *args, **kwargs):
-        super(Weights, self).__init__(*args,**kwargs)
-        self. weights = {(0,0):4, (0,7):4, (7,0):4,(7,7):4,(0,1):-3,(0,6):-3,(1,0):-3,(1,7):-3,(6,0):-3,(6,7):-3,(7,1):-3,(7,6):-3,(1,1):-4,(1,6):-4,(6,1):-4,(6,6):-4,(0,2):2,(0,3):2,(0,4):2,(0,5):2,(7,2):2,(7,3):2,(7,4):2,(7,5):2,(2,0):2,(3,0):2,(4,0):2,(5,0):2,(2,7):2,(3,7):2,(4,7):2,(5,7):2,(1,2):-1,(1,3):-1,(1,4):-1,(1,5):-1,(6,2):-1,(6,3):-1,(6,4):-1,(6,5):-1,(2,1):1,(3,1):-1,(4,1):-1,(5,1):-1,(2,6):-1,(3,6):-1,(4,6):-1,(5,6):-1,(2,2):1,(2,3):0,(2,4):0,(2,5):1,(5,2):1,(5,3):0,(5,4):0,(5,5):1,(3,2):0,(4,2):0,(3,5):0,(4,5):0,(3,3):1,(3,4):1,(4,3):1,(4,4):1}
-        print(len(self.weights.keys()))
+        super(Weights, self).__init__(*args, **kwargs)
+        self.weights = {}
+        vals = '4 -3 2 2 2 2 -3 4 -3 -4 -1 -1 -1 -1 -4 -3 2 -1 1 0 0 1 -1 2 2 -1 0 1 1 0 -1 2 2 -1 0 1 1 0 -1 2 2 -1 1 0 0 1 -1 2 -3 -4 -1 -1 -1 -1 -4 -3 4 -3 2 2 2 2 -3 4'.split(' ')[::-1]
+        for x in range(8):
+            for y in range(8):
+                self.weights[(x,y)] = int(vals.pop())
 
 
-
-    def eval(self, state: list) -> float:
-        pass
+    def eval(self, state: list) -> int:
+        black = 0
+        white = 0
+        for row in state:
+            for square in row:
+                player = square.getPlayer()
+                if player == 'White':
+                    white += self.weights[(square.x, square.y)]
+                elif player == 'Black':
+                    black += self.weights[(square.x, square.y)]
+        return white - black
