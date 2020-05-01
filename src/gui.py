@@ -13,6 +13,7 @@ class Square:
         self.photo = None
         self.occupied = False
         self.action = action
+        self.player = None
 
     def __repr__(self):
         return f'Square: x={self.x}, y={self.y}, kind={self.kind}, taken={self.occupied}'
@@ -25,11 +26,15 @@ class Square:
     def update(self, player: str) -> None:
         if player:
             player = player[0].upper() + player[1:]
+            self.player = player
             self.occupied = True
         self.photo = Image.open(f'pictures/{self.kind}{player}.png')
         self.photo = self.photo.resize((self.size, self.size), Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.photo)
         self.button.config(image=self.photo, width=self.size, height=self.size)
+
+    def getPlayer(self):
+        return self.player
 
     def handle(self):
         self.action(self)
