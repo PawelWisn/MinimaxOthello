@@ -22,6 +22,7 @@ class Move(abcMove):
 
 class Game(abcGame):
     def action(self, square):
+        print(repr(square))
         dest = square.x, square.y
         if Move.isLegal(self.board, dest):
             move = Move(dest, self.currPlayer.type)
