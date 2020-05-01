@@ -24,15 +24,12 @@ class Game(abcGame):
     def action(self, square):
         dest = square.x, square.y
         if Move.isLegal(self.board, dest):
-            move = Move(dest, self.currentPlayer.type)
+            move = Move(dest, self.currPlayer.type)
             self.makeMove(move)
 
     def makeMove(self, move: abcMove) -> None:
         self.board.updateSquare(move)
-        if self.currentPlayer is self.firstPlayer:
-            self.currentPlayer = self.secondPlayer
-        else:
-            self.currentPlayer = self.firstPlayer
+        self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
 
     def gameOver(self) -> int:
         if not self.board.freeSquares:

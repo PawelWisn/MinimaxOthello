@@ -50,9 +50,9 @@ class abcGame(ABC):
                  heurVarP2):
         self.window = window
         self.board = board(window, self, square, squaresNum, squareSize)
-        self.firstPlayer = Player(firstPlayer)
-        self.secondPlayer = Player(secondPlayer)
-        self.currentPlayer = self.firstPlayer
+        self.player1 = Player(firstPlayer)
+        self.player2 = Player(secondPlayer)
+        self.currPlayer = self.player1
         self.modeVar = modeVar
         self.depthVar = depthVar
         self.heurVarP1 = heurVarP1
