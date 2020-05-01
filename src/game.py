@@ -11,7 +11,7 @@ class abcMove(ABC):
     def __init__(self, dest, player, src=None):
         self.dest = dest
         self.src = src
-        self.player = 'Black'
+        self.player = player
 
     @staticmethod
     @abstractmethod
