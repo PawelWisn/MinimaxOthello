@@ -90,6 +90,11 @@ class Window(tk.Tk):
         self.heuristicRadio2P2.grid(row=7, column=11)
         self.heurVarP2.set(0)
 
+        self.nextPlayerLabel = tk.Label(self, text="player:")
+        self.nextPlayerInfo = tk.Label(self, text="todo")
+        self.nextPlayerLabel.grid(row=8,column=0)
+        self.nextPlayerInfo.grid(row=8,column=1)
+
         return self.modeVar, self.depthVar, self.heurVarP1, self.heurVarP2
 
     def run(self):
