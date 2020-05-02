@@ -43,11 +43,8 @@ class Game(abcGame):
         else:
             pass  # display  player has no move
 
-    def gameOver(self) -> int:
-        if not self.board.freeSquares:
-            return True
-        # if two passes in a row -> True
-        return False
+    def gameOver(self) -> bool:
+        return self.passCounter==2 or not self.board.freeSquares
 
 
 class CoinParity(abcHeuristic):
@@ -68,11 +65,11 @@ class Weights(abcHeuristic):
     def __init__(self, *args, **kwargs):
         super(Weights, self).__init__(*args, **kwargs)
         self.weights = {}
-        vals = '4 -3 2 2 2 2 -3 4 -3 -4 -1 -1 -1 -1 -4 -3 2 -1 1 0 0 1 -1 2 2 -1 0 1 1 0 -1 2 2 -1 0 1 1 0 -1 2 2 -1 1 0 0 1 -1 2 -3 -4 -1 -1 -1 -1 -4 -3 4 -3 2 2 2 2 -3 4'.split(' ')[::-1]
+        vals = '4 -3 2 2 2 2 -3 4 -3 -4 -1 -1 -1 -1 -4 -3 2 -1 1 0 0 1 -1 2 2 -1 0 1 1 0 -1 2 2 -1 0 1 1 0 -1 2 2 -1 1 0 0 1 -1 2 -3 -4 -1 -1 -1 -1 -4 -3 4 -3 2 2 2 2 -3 4'.split(
+            ' ')[::-1]
         for x in range(8):
             for y in range(8):
-                self.weights[(x,y)] = int(vals.pop())
-
+                self.weights[(x, y)] = int(vals.pop())
 
     def eval(self, state: list) -> int:
         black = 0

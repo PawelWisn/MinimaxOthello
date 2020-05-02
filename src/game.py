@@ -67,7 +67,7 @@ class abcGame(ABC):
     #     pass
     #
     @abstractmethod
-    def gameOver(self) -> int:
+    def gameOver(self) -> bool:
         pass
 
     #
