@@ -71,9 +71,9 @@ class abcGame(ABC):
         pass
 
     #
-    # @abstractmethod
-    # def evaluate(self, heuristic: abcHeuristic) -> float:
-    #     pass
+    @abstractmethod
+    def evaluate(self) -> float:
+        pass
     #
     # @abstractmethod
     # def updateState(self, state, move: abcMove):

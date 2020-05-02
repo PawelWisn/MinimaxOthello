@@ -29,6 +29,7 @@ class Game(abcGame):
 
     def action(self, square):
         print(repr(square))
+        print(self.evaluate())
         dest = square.x, square.y
         if Move.isLegal(self.board, dest):
             move = Move(dest, self.currPlayer.type)
@@ -41,14 +42,28 @@ class Game(abcGame):
         if True:  # if next player has move
             self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
         else:
+            print('PLAYER HAS NO MOVE - SKIPPING')
             pass  # display  player has no move
 
     def gameOver(self) -> bool:
-        return self.passCounter==2 or not self.board.freeSquares
+        return self.passCounter == 2 or not self.board.freeSquares
+
+    def evaluate(self) -> float:
+        if self.currPlayer is self.player1:  # Player1's turn
+            if self.heurVarP1.get() == 0:  # First heuristic
+                return self.coinParityHeur.eval(self.board.squares)
+            elif self.heurVarP1.get() == 1:  # Second heuristic
+                return self.weightsHeur.eval(self.board.squares)
+        else:  # Player2's turn
+            if self.heurVarP2.get() == 0:  # First heuristic
+                return self.coinParityHeur.eval(self.board.squares)
+            elif self.heurVarP2.get() == 1:  # Second heuristic
+                return self.weightsHeur.eval(self.board.squares)
 
 
 class CoinParity(abcHeuristic):
     def eval(self, state: list) -> int:
+        print('CoinParity')
         black = 0
         white = 0
         for row in state:
@@ -72,6 +87,7 @@ class Weights(abcHeuristic):
                 self.weights[(x, y)] = int(vals.pop())
 
     def eval(self, state: list) -> int:
+        print('Weights')
         black = 0
         white = 0
         for row in state:
