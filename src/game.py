@@ -3,12 +3,21 @@ from abc import ABC, abstractmethod
 
 class abcHeuristic(ABC):
     @abstractmethod
-    def eval(self, state:list) -> int:
+    def eval(self, state: list) -> int:
         pass
 
 
+class Player:
+    def __init__(self, type: str):
+        self.type = type[0].upper() + type[1:]
+        print(self.type)
+
+    def __str__(self):
+        return f"Player: type={self.type}"
+
+
 class abcMove(ABC):
-    def __init__(self, dest, player:str=None, src=None):
+    def __init__(self, dest, player: Player = None, src=None):
         self.dest = dest
         self.src = src
         self.player = player
@@ -46,7 +55,8 @@ class abcBoard(ABC):
 
 
 class abcGame(ABC):
-    def __init__(self, window, board, square, squaresNum, squareSize, firstPlayer, secondPlayer, modeVar, depthVar, heurVarP1,
+    def __init__(self, window, board, square, squaresNum, squareSize, firstPlayer, secondPlayer, modeVar, depthVar,
+                 heurVarP1,
                  heurVarP2):
         self.window = window
         self.board = board(window, self, square, squaresNum, squareSize)
@@ -74,19 +84,12 @@ class abcGame(ABC):
     @abstractmethod
     def evaluate(self) -> float:
         pass
+
     #
-    # @abstractmethod
-    # def updateState(self, state, move: abcMove):
-    #     pass
+    @abstractmethod
+    def updateState(self, state, move: abcMove):
+        pass
 
     @abstractmethod
     def action(self, square):
         pass
-
-
-class Player:
-    def __init__(self, type):
-        self.type = type
-
-    def __str__(self):
-        return "Player: " + self.type

@@ -1,6 +1,7 @@
 import tkinter as tk
 from abc import ABC, abstractmethod
 from PIL import Image, ImageTk
+from src.game import Player
 
 
 class Square:
@@ -16,19 +17,18 @@ class Square:
         self.player = None
 
     def __repr__(self):
-        return f'Square: x={self.x}, y={self.y}, kind={self.kind}, taken={self.occupied}'
+        return f'Square: x={self.x}, y={self.y}, kind={self.kind}, taken={self.occupied}, player={self.player}'
 
     def draw(self) -> None:
         self.button = tk.Button(self.root, command=self.handle)
-        self.update('')
+        self.update()
         self.button.grid(row=self.x, column=self.y)
 
-    def update(self, player: str) -> None:
+    def update(self, player: Player = None) -> None:
         if player:
-            player = player[0].upper() + player[1:]
             self.player = player
             self.occupied = True
-        self.photo = Image.open(f'pictures/{self.kind}{player}.png')
+        self.photo = Image.open(f'pictures/{self.kind}{self.player.type if self.player else ""}.png')
         self.photo = self.photo.resize((self.size, self.size), Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.photo)
         self.button.config(image=self.photo, width=self.size, height=self.size)
@@ -92,12 +92,10 @@ class Window(tk.Tk):
 
         self.nextPlayerLabel = tk.Label(self, text="player:")
         self.nextPlayerInfo = tk.Label(self, text="todo")
-        self.nextPlayerLabel.grid(row=8,column=0)
-        self.nextPlayerInfo.grid(row=8,column=1)
+        self.nextPlayerLabel.grid(row=8, column=0)
+        self.nextPlayerInfo.grid(row=8, column=1)
 
         return self.modeVar, self.depthVar, self.heurVarP1, self.heurVarP2
 
     def run(self):
         self.mainloop()
-
-

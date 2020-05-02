@@ -5,6 +5,7 @@ class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         super(Board, self).__init__(*args, **kwargs)
         self.freeSquares = len(self.squares) ** 2
+        self.size = int(len(self.squares) ** 0.5)
 
     def updateSquare(self, move: abcMove) -> None:
         self.squares[move.dest[1]][move.dest[0]].update(move.player)
@@ -29,15 +30,17 @@ class Game(abcGame):
 
     def action(self, square):
         print(repr(square))
-        print(self.evaluate())
         dest = square.x, square.y
         if Move.isLegal(self.board, dest):
-            move = Move(dest, self.currPlayer.type)
+            move = Move(dest, self.currPlayer)
             self.makeMove(move)
+        print(self.evaluate())
 
     def makeMove(self, move: abcMove) -> None:
         self.passCounter = 0
         self.board.updateSquare(move)
+        if self.gameOver():
+            raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))
 
         if True:  # if next player has move
             self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
@@ -46,7 +49,7 @@ class Game(abcGame):
             pass  # display  player has no move
 
     def gameOver(self) -> bool:
-        return self.passCounter == 2 or not self.board.freeSquares
+        return not self.board.freeSquares or self.passCounter == 2
 
     def evaluate(self) -> float:
         if self.currPlayer is self.player1:  # Player1's turn
@@ -60,19 +63,26 @@ class Game(abcGame):
             elif self.heurVarP2.get() == 1:  # Second heuristic
                 return self.weightsHeur.eval(self.board.squares)
 
+    def updateState(self, state, move: abcMove):
+        toFlip = []
+        candidates = []
+        # row right
+        for column in range(move.dest[1] + 1, self.board.size):
+            if self.board.getSquare(move.dest[0], column).getPlayer():
+                pass
+
 
 class CoinParity(abcHeuristic):
     def eval(self, state: list) -> int:
-        print('CoinParity')
-        black = 0
-        white = 0
+        black = white = 0
         for row in state:
             for square in row:
                 player = square.getPlayer()
-                if player == 'White':
-                    white += 1
-                elif player == 'Black':
-                    black += 1
+                if player is not None:
+                    if player.type == 'White':
+                        white += 1
+                    else:
+                        black += 1
         return white - black
 
 
@@ -89,13 +99,13 @@ class Weights(abcHeuristic):
 
     def eval(self, state: list) -> int:
         print('Weights')
-        black = 0
-        white = 0
+        black = white = 0
         for row in state:
             for square in row:
                 player = square.getPlayer()
-                if player == 'White':
-                    white += self.weights[(square.x, square.y)]
-                elif player == 'Black':
-                    black += self.weights[(square.x, square.y)]
+                if player is not None:
+                    if player.type == 'White':
+                        white += self.weights[(square.x, square.y)]
+                    else:
+                        black += self.weights[(square.x, square.y)]
         return white - black
