@@ -43,13 +43,13 @@ class Game(abcGame):
         if Move.isLegal(self.board, dest):
             move = Move(dest, self.currPlayer)
             self.makeMove(move)
-        print('evaluation:',self.evaluate())
+        print('evaluation:', self.evaluate())
 
     def makeMove(self, move: abcMove) -> None:
         # print(repr(self.settings))
         self.passCounter = 0
         self.board.updateSquare(move)
-        self.updateState(self.board.squares, move)
+        self.updateState(move)
         if self.gameOver():
             raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))
 
@@ -74,7 +74,7 @@ class Game(abcGame):
             else:  # Second heuristic
                 return self.weightsHeur.eval(self.board.squares)
 
-    def getFlippablesHorVer(self,row,col, src, init, dst, step=1):
+    def getFlippablesHorVer(self, row, col, src, init, dst, step=1):
         candidates = []
         for var in range(src + init, dst, step):
             print(var, end=' ')
@@ -89,14 +89,14 @@ class Game(abcGame):
                 break
         return []
 
-    def getFlippablesDiagonal(self, row,col,row_sign,col_sign, condL, condR):
+    def getFlippablesDiagonal(self, row, col, row_sign, col_sign, condL, condR):
         offset = 1
         candidates = []
-        while condL(row,row_sign,offset) and condR(col,col_sign,offset):
-            print((row + row_sign*offset, col + col_sign*offset), end=' ')
-            if (owner := self.board.getSquare(row + row_sign*offset, col + col_sign*offset).getPlayer()):
+        while condL(row, row_sign, offset) and condR(col, col_sign, offset):
+            print((row + row_sign * offset, col + col_sign * offset), end=' ')
+            if (owner := self.board.getSquare(row + row_sign * offset, col + col_sign * offset).getPlayer()):
                 if owner is not self.currPlayer:
-                    candidates.append(Move((row + row_sign*offset, col + col_sign*offset), self.currPlayer))
+                    candidates.append(Move((row + row_sign * offset, col + col_sign * offset), self.currPlayer))
                 else:
                     return candidates
             else:
@@ -104,177 +104,24 @@ class Game(abcGame):
             offset += 1
         return []
 
-    def updateState(self, state, move: abcMove):
-        candsE = self.getFlippablesHorVer(move.x,None,move.y, 1, self.board.size,1)
-        # flipAccepted = True
-        # candidates = []
-        # print('---\noption-E | columns: ', end=' ')
-        # for column in range(move.y + 1, self.board.size):
-        #     print(column, end=' ')
-        #     if (owner := self.board.getSquare(move.x, column).getPlayer()):
-        #         if owner is not self.currPlayer:
-        #             candidates.append(Move((move.x, column), self.currPlayer))
-        #         else:
-        #             break
-        #     else:
-        #         flipAccepted = False
-        #         break
-        # else:
-        #     flipAccepted = False
-        # print()
-        # if flipAccepted:
-        #     for cand in candidates:
-        #         self.board.updateSquare(cand)
-        candsW=self.getFlippablesHorVer(move.x,None,move.y,-1, -1,-1)
-        # flipAccepted = True
-        # candidates = []
-        # print('option-W | columns: ', end=' ')
-        # for column in range(move.y - 1, -1, -1):
-        #     print(column, end=' ')
-        #     if (owner := self.board.getSquare(move.x, column).getPlayer()):
-        #         if owner is not self.currPlayer:
-        #             candidates.append(Move((move.x, column), self.currPlayer))
-        #         else:
-        #             break
-        #     else:
-        #         flipAccepted = False
-        #         break
-        # else:
-        #     flipAccepted = False
-        # print()
-        # if flipAccepted:
-        #     for cand in candidates:
-        #         self.board.updateSquare(cand)
+    def getFlippables(self, move: abcMove):
+        candsE = self.getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
+        candsW = self.getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
         candsN = self.getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
-        # flipAccepted = True
-        # candidates = []
-        # print('option-N | rows: ', end=' ')
-        # for row in range(move.x - 1, -1, -1):
-        #     print(row, end=' ')
-        #     if (owner := self.board.getSquare(row, move.y).getPlayer()):
-        #         if owner is not self.currPlayer:
-        #             candidates.append(Move((row, move.y), self.currPlayer))
-        #         else:
-        #             break
-        #     else:
-        #         flipAccepted = False
-        #         break
-        # else:
-        #     flipAccepted = False
-        # print()
-        # if flipAccepted:
-        #     for cand in candidates:
-        #         self.board.updateSquare(cand)
         candsS = self.getFlippablesHorVer(None, move.y, move.x, 1, self.board.size, 1)
-        # flipAccepted = True
-        # candidates = []
-        # print('option-S | rows: ', end=' ')
-        # for row in range(move.x + 1, self.board.size):
-        #     print(row, end=' ')
-        #     if (owner := self.board.getSquare(row, move.y).getPlayer()):
-        #         if owner is not self.currPlayer:
-        #             candidates.append(Move((row, move.y), self.currPlayer))
-        #         else:
-        #             break
-        #     else:
-        #         flipAccepted = False
-        #         break
-        # else:
-        #     flipAccepted = False
-        # print()
-        # if flipAccepted:
-        #     for cand in candidates:
-        #         self.board.updateSquare(cand)
-        candsNE = self.getFlippablesDiagonal(move.x,move.y,-1,1, lambda a,b,c:a+b*c>=0, lambda a,b,c:a+b*c<self.board.size)
-        # flipAccepted = True
-        # candidates = []
-        # print('option-NE | cells: ', end=' ')
-        # offset = 1
-        # while move.x - offset >= 0 and move.y + offset < self.board.size:
-        #     print((move.x - offset, move.y + offset), end=' ')
-        #     if (owner := self.board.getSquare(move.x - offset, move.y + offset).getPlayer()):
-        #         if owner is not self.currPlayer:
-        #             candidates.append(Move((move.x - offset, move.y + offset), self.currPlayer))
-        #         else:
-        #             break
-        #     else:
-        #         flipAccepted = False
-        #         break
-        #     offset += 1
-        # else:
-        #     flipAccepted = False
-        # print()
-        # if flipAccepted:
-        #     for cand in candidates:
-        #         self.board.updateSquare(cand)
-        candsSE = self.getFlippablesDiagonal(move.x, move.y, 1, 1, lambda a,b,c:a+b*c<self.board.size, lambda a,b,c:a+b*c<self.board.size)
-        # flipAccepted = True
-        # candidates = []
-        # print('option-SE | cells: ', end=' ')
-        # offset = 1
-        # while move.x + offset < self.board.size and move.y + offset < self.board.size:
-        #     print((move.x + offset, move.y + offset), end=' ')
-        #     if (owner := self.board.getSquare(move.x + offset, move.y + offset).getPlayer()):
-        #         if owner is not self.currPlayer:
-        #             candidates.append(Move((move.x + offset, move.y + offset), self.currPlayer))
-        #         else:
-        #             break
-        #     else:
-        #         flipAccepted = False
-        #         break
-        #     offset += 1
-        # else:
-        #     flipAccepted = False
-        # print()
-        # if flipAccepted:
-        #     for cand in candidates:
-        #         self.board.updateSquare(cand)
-        candsSW = self.getFlippablesDiagonal(move.x, move.y, 1, -1, lambda a,b,c:a+b*c<self.board.size, lambda a,b,c:a+b*c>=0)
-        # flipAccepted = True
-        # candidates = []
-        # print('option-SW | cells: ', end=' ')
-        # offset = 1
-        # while move.x + offset < self.board.size and move.y - offset >= 0:
-        #     print((move.x + offset, move.y - offset), end=' ')
-        #     if (owner := self.board.getSquare(move.x + offset, move.y - offset).getPlayer()):
-        #         if owner is not self.currPlayer:
-        #             candidates.append(Move((move.x + offset, move.y - offset), self.currPlayer))
-        #         else:
-        #             break
-        #     else:
-        #         flipAccepted = False
-        #         break
-        #     offset += 1
-        # else:
-        #     flipAccepted = False
-        # print()
-        # if flipAccepted:
-        #     for cand in candidates:
-        #         self.board.updateSquare(cand)
-        candsNW = self.getFlippablesDiagonal(move.x, move.y, -1, -1, lambda a,b,c:a+b*c>=0, lambda a,b,c:a+b*c>=0)
-        # flipAccepted = True
-        # candidates = []
-        # print('option-NW | cells: ', end=' ')
-        # offset = 1
-        # while move.x - offset >= 0 and move.y - offset >= 0:
-        #     print((move.x - offset, move.y - offset), end=' ')
-        #     if (owner := self.board.getSquare(move.x - offset, move.y - offset).getPlayer()):
-        #         if owner is not self.currPlayer:
-        #             candidates.append(Move((move.x - offset, move.y - offset), self.currPlayer))
-        #         else:
-        #             break
-        #     else:
-        #         flipAccepted = False
-        #         break
-        #     offset += 1
-        # else:
-        #     flipAccepted = False
-        # print()
-        # if flipAccepted:
-        #     for cand in candidates:
-        #         self.board.updateSquare(cand)
-        cands = candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
-        for c in cands: self.board.updateSquare(c)
+        candsNE = self.getFlippablesDiagonal(move.x, move.y, -1, 1, lambda a, b, c: a + b * c >= 0,
+                                             lambda a, b, c: a + b * c < self.board.size)
+        candsSE = self.getFlippablesDiagonal(move.x, move.y, 1, 1, lambda a, b, c: a + b * c < self.board.size,
+                                             lambda a, b, c: a + b * c < self.board.size)
+        candsSW = self.getFlippablesDiagonal(move.x, move.y, 1, -1, lambda a, b, c: a + b * c < self.board.size,
+                                             lambda a, b, c: a + b * c >= 0)
+        candsNW = self.getFlippablesDiagonal(move.x, move.y, -1, -1, lambda a, b, c: a + b * c >= 0,
+                                             lambda a, b, c: a + b * c >= 0)
+        return candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
+
+
+    def updateState(self, move: abcMove):
+        for c in self.getFlippables(move): self.board.updateSquare(c)
 
 class CoinParity(abcHeuristic):
     def eval(self, state: list) -> int:

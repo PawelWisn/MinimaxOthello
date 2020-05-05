@@ -110,7 +110,7 @@ class abcGame(ABC):
         pass
 
     @abstractmethod
-    def updateState(self, state, move: abcMove):
+    def updateState(self, move: abcMove):
         pass
 
     @abstractmethod
