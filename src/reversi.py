@@ -8,7 +8,6 @@ class Board(abcBoard):
         self.size = int(self.squaresNum ** 0.5)
 
     def updateSquare(self, move: Move) -> None:
-        print('\nupdating player', move.dest, move.player)
         self.squares[move.x][move.y].update(move.player)
         self.freeSquares -= 1
 
@@ -21,15 +20,14 @@ class Game(abcGame):
         self.weightsHeur = Weights()
 
     def action(self, square):
-        # print(repr(square))
-        dest = square.x, square.y
-        if Move.isLegal(self.board, dest):
-            move = Move(dest, self.currPlayer)
+        move = Move((square.x, square.y), self.currPlayer)
+        if flippables:=self.isLegalMove(move):
+            print(repr(move))
+            self.updateState(move,flippables)
             self.makeMove(move)
         print('evaluation:', self.evaluate())
 
     def makeMove(self, move: Move) -> None:
-        # print(repr(self.settings))
         self.passCounter = 0
         self.board.updateSquare(move)
         self.updateState(move)
@@ -60,9 +58,8 @@ class Game(abcGame):
     def _getFlippablesHorVer(self, row, col, src, init, dst, step=1):
         candidates = []
         for var in range(src + init, dst, step):
-            print(var, end=' ')
-            r = row if row else var
-            c = col if col else var
+            r = row if row is not None else var
+            c = col if col is not None else var
             if (owner := self.board.getSquare(r, c).getPlayer()):
                 if owner is not self.currPlayer:
                     candidates.append(Move((r, c), self.currPlayer))
@@ -76,7 +73,6 @@ class Game(abcGame):
         offset = 1
         candidates = []
         while condL(row, row_sign, offset) and condR(col, col_sign, offset):
-            print((row + row_sign * offset, col + col_sign * offset), end=' ')
             if (owner := self.board.getSquare(row + row_sign * offset, col + col_sign * offset).getPlayer()):
                 if owner is not self.currPlayer:
                     candidates.append(Move((row + row_sign * offset, col + col_sign * offset), self.currPlayer))
@@ -88,7 +84,7 @@ class Game(abcGame):
         return []
 
     def _getFlippables(self, move: Move):
-        '''This method returns a list of taken squares, that should change color after the move.'''
+        '''This method returns a list of taken squares that should change color after the move.'''
         candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
         candsW = self._getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
         candsN = self._getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
@@ -103,11 +99,17 @@ class Game(abcGame):
                                               lambda a, b, c: a + b * c >= 0)
         return candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
 
-    def updateState(self, move: Move):
-        for c in self._getFlippables(move): self.board.updateSquare(c)
+    def updateState(self, move: Move, flippables=None) -> None:
+        flippables = flippables or []
+        for f in flippables: self.board.updateSquare(f)
 
 
-class CoinParity(abcHeuristic):#optimize by map
+    def isLegalMove(self, move: Move) -> list:
+        if self.board.getSquare(move.x, move.y).occupied: return []
+        return self._getFlippables(move)
+
+
+class CoinParity(abcHeuristic):  # optimize by map
     def eval(self, state: list) -> int:
         black = white = 0
         for row in state:
@@ -118,10 +120,10 @@ class CoinParity(abcHeuristic):#optimize by map
                         white += 1
                     else:
                         black += 1
-        return white - black
+        return black - white
 
 
-class Weights(abcHeuristic):#optimize by map
+class Weights(abcHeuristic):  # optimize by map
     def __init__(self, *args, **kwargs):
         super(Weights, self).__init__(*args, **kwargs)
         self.weights = {}
@@ -133,7 +135,6 @@ class Weights(abcHeuristic):#optimize by map
                 self.weights[(x, y)] = int(vals.pop())
 
     def eval(self, state: list) -> int:
-        print('Weights')
         black = white = 0
         for row in state:
             for square in row:
@@ -143,4 +144,4 @@ class Weights(abcHeuristic):#optimize by map
                         white += self.weights[(square.x, square.y)]
                     else:
                         black += self.weights[(square.x, square.y)]
-        return white - black
+        return black - white

@@ -58,6 +58,9 @@ class Move:
     def y(self):
         return self.dest[1]
 
+    def __repr__(self):
+        return f"Move: dest={self.dest}, player={self.player.type}"
+
 
 class abcBoard(ABC):
     def __init__(self, root, game, square, squaresNum: int, squareSize: int):
@@ -113,9 +116,13 @@ class abcGame(ABC):
         pass
 
     @abstractmethod
-    def updateState(self, move: Move)->None:
+    def isLegalMove(self, move: Move) -> list:
         pass
 
     @abstractmethod
-    def action(self, square)->None:
+    def updateState(self, move: Move) -> None:
+        pass
+
+    @abstractmethod
+    def action(self, square) -> None:
         pass
