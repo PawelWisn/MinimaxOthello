@@ -24,6 +24,7 @@ class Square:
         self.button.grid(row=self.x, column=self.y)
 
     def update(self, player: Player = None) -> None:
+        print('updating square',player)
         if player:
             self.player = player
             self.occupied = True

@@ -8,6 +8,7 @@ class Board(abcBoard):
         self.size = int(self.squaresNum ** 0.5)
 
     def updateSquare(self, move: abcMove) -> None:
+        print('\nupdating player', move.dest, move.player)
         self.squares[move.x][move.y].update(move.player)
         self.freeSquares -= 1
 
@@ -48,7 +49,7 @@ class Game(abcGame):
         # print(repr(self.settings))
         self.passCounter = 0
         self.board.updateSquare(move)
-        self.updateState(self.board.squares,move)
+        self.updateState(self.board.squares, move)
         if self.gameOver():
             raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))
 
@@ -73,43 +74,159 @@ class Game(abcGame):
             else:  # Second heuristic
                 return self.weightsHeur.eval(self.board.squares)
 
+    # self.board.updateSquare(Move((move.x, column), self.currPlayer))
     def updateState(self, state, move: abcMove):
-        toFlip = []
+        flipAccepted = True
         candidates = []
-        # row right
-        print("{%d,%d}"%(move.x,move.y))
         print('---\noption-E | columns: ', end=' ')
         for column in range(move.y + 1, self.board.size):
-            print(column,end=' ')
-            if self.board.getSquare(move.x, column).getPlayer():
-                pass
-        print()
-        print('option-W | columns: ', end=' ')
-        for column in range(move.y - 1, -1,-1):
             print(column, end=' ')
-            if self.board.getSquare(move.x, column).getPlayer():
-                pass
+            if (owner := self.board.getSquare(move.x, column).getPlayer()):
+                if owner is not self.currPlayer:
+                    candidates.append(Move((move.x, column), self.currPlayer))
+                else:
+                    break
+            else:
+                flipAccepted = False
+                break
         print()
+        if flipAccepted:
+            for cand in candidates:
+                self.board.updateSquare(cand)
+
+        flipAccepted = True
+        candidates = []
+        print('option-W | columns: ', end=' ')
+        for column in range(move.y - 1, -1, -1):
+            print(column, end=' ')
+            if (owner := self.board.getSquare(move.x, column).getPlayer()):
+                if owner is not self.currPlayer:
+                    candidates.append(Move((move.x, column), self.currPlayer))
+                else:
+                    break
+            else:
+                flipAccepted = False
+                break
+        print()
+        if flipAccepted:
+            for cand in candidates:
+                self.board.updateSquare(cand)
+
+        flipAccepted = True
+        candidates = []
         print('option-N | rows: ', end=' ')
-        for row in range(move.x - 1, -1,-1):
+        for row in range(move.x - 1, -1, -1):
             print(row, end=' ')
-            if self.board.getSquare(row,move.y).getPlayer():
-                pass
+            if (owner := self.board.getSquare(row, move.y).getPlayer()):
+                if owner is not self.currPlayer:
+                    candidates.append(Move((row, move.y), self.currPlayer))
+                else:
+                    break
+            else:
+                flipAccepted = False
+                break
         print()
+        if flipAccepted:
+            for cand in candidates:
+                self.board.updateSquare(cand)
+
+        flipAccepted = True
+        candidates = []
         print('option-S | rows: ', end=' ')
         for row in range(move.x + 1, self.board.size):
             print(row, end=' ')
-            if self.board.getSquare(row,move.y).getPlayer():
-                pass
+            if (owner := self.board.getSquare(row, move.y).getPlayer()):
+                if owner is not self.currPlayer:
+                    candidates.append(Move((row, move.y), self.currPlayer))
+                else:
+                    break
+            else:
+                flipAccepted = False
+                break
         print()
+        if flipAccepted:
+            for cand in candidates:
+                self.board.updateSquare(cand)
+
+        flipAccepted = True
+        candidates = []
         print('option-NE | cells: ', end=' ')
-        offset=1
-        while move.x-offset>=0 and move.y+offset<self.board.size:
-            print((move.x-offset,move.y+offset), end=' ')
-            if self.board.getSquare(move.x-offset,move.y+offset).getPlayer():
-                pass
-            offset+=1
+        offset = 1
+        while move.x - offset >= 0 and move.y + offset < self.board.size:
+            print((move.x - offset, move.y + offset), end=' ')
+            if (owner := self.board.getSquare(move.x - offset, move.y + offset).getPlayer()):
+                if owner is not self.currPlayer:
+                    candidates.append(Move((move.x - offset, move.y + offset), self.currPlayer))
+                else:
+                    break
+            else:
+                flipAccepted = False
+                break
+            offset += 1
         print()
+        if flipAccepted:
+            for cand in candidates:
+                self.board.updateSquare(cand)
+
+        flipAccepted = True
+        candidates = []
+        print('option-SE | cells: ', end=' ')
+        offset = 1
+        while move.x + offset < self.board.size and move.y + offset < self.board.size:
+            print((move.x + offset, move.y + offset), end=' ')
+            if (owner := self.board.getSquare(move.x + offset, move.y + offset).getPlayer()):
+                if owner is not self.currPlayer:
+                    candidates.append(Move((move.x + offset, move.y + offset), self.currPlayer))
+                else:
+                    break
+            else:
+                flipAccepted = False
+                break
+            offset += 1
+        print()
+        if flipAccepted:
+            for cand in candidates:
+                self.board.updateSquare(cand)
+
+        flipAccepted = True
+        candidates = []
+        print('option-SW | cells: ', end=' ')
+        offset = 1
+        while move.x + offset < self.board.size and move.y - offset >= 0:
+            print((move.x + offset, move.y - offset), end=' ')
+            if (owner := self.board.getSquare(move.x + offset, move.y - offset).getPlayer()):
+                if owner is not self.currPlayer:
+                    candidates.append(Move((move.x + offset, move.y - offset), self.currPlayer))
+                else:
+                    break
+            else:
+                flipAccepted = False
+                break
+            offset += 1
+        print()
+        if flipAccepted:
+            for cand in candidates:
+                self.board.updateSquare(cand)
+
+        flipAccepted = True
+        candidates = []
+        print('option-NW | cells: ', end=' ')
+        offset = 1
+        while move.x - offset >= 0 and move.y - offset >= 0:
+            print((move.x - offset, move.y - offset), end=' ')
+            if (owner := self.board.getSquare(move.x - offset, move.y - offset).getPlayer()):
+                if owner is not self.currPlayer:
+                    candidates.append(Move((move.x - offset, move.y - offset), self.currPlayer))
+                else:
+                    break
+            else:
+                flipAccepted = False
+                break
+            offset += 1
+        print()
+        if flipAccepted:
+            for cand in candidates:
+                self.board.updateSquare(cand)
 
 
 class CoinParity(abcHeuristic):
