@@ -8,10 +8,10 @@ class abcHeuristic(ABC):
 
 
 class Settings:
-    def __init__(self, modeVar, depthLabelP1, depthLabelP2, abVarP1, abVarP2, heurVarP1, heurVarP2):
+    def __init__(self, modeVar, depthInputP1, depthInputP2, abVarP1, abVarP2, heurVarP1, heurVarP2):
         self.modeVar = modeVar
-        self.depthLabelP1 = depthLabelP1
-        self.depthLabelP2 = depthLabelP2
+        self.depthP1 = depthInputP1
+        self.depthP2 = depthInputP2
         self.abVarP1 = abVarP1
         self.abVarP2 = abVarP2
         self.heurVarP1 = heurVarP1
@@ -21,10 +21,10 @@ class Settings:
         return self.modeVar.get()
 
     def getDepthP1(self):
-        return self.depthLabelP1.get()
+        return self.depthP1.get()
 
     def getDepthP2(self):
-        return self.depthLabelP2.get()
+        return self.depthP2.get()
 
     def isAlphaBetaP1(self):
         return self.abVarP1.get() == 1
@@ -37,6 +37,9 @@ class Settings:
 
     def getHeurP2(self):
         return self.heurVarP2.get()
+
+    def __repr__(self):
+        return f"Settings: m={self.getMode()},dP1={self.getDepthP1()},dP2={self.getDepthP2()},abP1={self.isAlphaBetaP1()},abP2={self.isAlphaBetaP2()},hP1={self.getHeurP1()},hP2={self.getHeurP2()}"
 
 
 class Player:
@@ -61,7 +64,7 @@ class abcMove(ABC):
 
 
 class abcBoard(ABC):
-    def __init__(self, root, game, square, squaresNum:int, squareSize:int):
+    def __init__(self, root, game, square, squaresNum: int, squareSize: int):
         self.game = game
         self.root = root
         self.squareSize = squareSize

@@ -37,6 +37,7 @@ class Game(abcGame):
         print(self.evaluate())
 
     def makeMove(self, move: abcMove) -> None:
+        print(repr(self.settings))
         self.passCounter = 0
         self.board.updateSquare(move)
         if self.gameOver():
@@ -53,14 +54,14 @@ class Game(abcGame):
 
     def evaluate(self) -> float:
         if self.currPlayer is self.player1:  # Player1's turn
-            if self.heurVarP1.get() == 0:  # First heuristic
+            if self.settings.getHeurP1() == 0:  # First heuristic
                 return self.coinParityHeur.eval(self.board.squares)
-            elif self.heurVarP1.get() == 1:  # Second heuristic
+            else:  # Second heuristic
                 return self.weightsHeur.eval(self.board.squares)
         else:  # Player2's turn
-            if self.heurVarP2.get() == 0:  # First heuristic
+            if self.settings.getHeurP2() == 0:  # First heuristic
                 return self.coinParityHeur.eval(self.board.squares)
-            elif self.heurVarP2.get() == 1:  # Second heuristic
+            else:  # Second heuristic
                 return self.weightsHeur.eval(self.board.squares)
 
     def updateState(self, state, move: abcMove):

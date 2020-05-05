@@ -39,9 +39,6 @@ class Square:
         self.action(self)
 
 
-
-
-
 class Window(tk.Tk):
     def __init__(self, width, height, title):
         super(Window, self).__init__()
@@ -122,7 +119,8 @@ class Window(tk.Tk):
         self.nextPlayerLabel.grid(row=7, column=0)
         self.nextPlayerInfo.grid(row=7, column=1)
 
-        return Settings(self.modeVar, self.depthLabelP1, self.depthLabelP2, self.abVarP1, self.abVarP2, self.heurVarP1, self.heurVarP2)
+        return Settings(self.modeVar, self.depthInputP1, self.depthInputP2, self.abVarP1, self.abVarP2, self.heurVarP1,
+                        self.heurVarP2)
 
     def run(self):
         self.mainloop()
