@@ -8,22 +8,22 @@ class Board(abcBoard):
         self.size = int(self.squaresNum ** 0.5)
 
     def updateSquare(self, move: abcMove) -> None:
-        self.squares[move.dest[1]][move.dest[0]].update(move.player)
+        self.squares[move.x][move.y].update(move.player)
         self.freeSquares -= 1
 
 
 class Move(abcMove):
     @property
     def x(self):
-        return self.dest[1]
+        return self.dest[0]
 
     @property
     def y(self):
-        return self.dest[0]
+        return self.dest[1]
 
     @staticmethod
     def isLegal(board: abcBoard, dest, player=None, src=None) -> bool:
-        if board.getSquare(dest[1], dest[0]).occupied:
+        if board.getSquare(dest[0], dest[1]).occupied:
             return False
         # if not change -> False
         return True
@@ -77,36 +77,38 @@ class Game(abcGame):
         toFlip = []
         candidates = []
         # row right
+        print("{%d,%d}"%(move.x,move.y))
         print('---\noption-E | columns: ', end=' ')
-        for column in range(move.dest[1] + 1, self.board.size):
+        for column in range(move.y + 1, self.board.size):
             print(column,end=' ')
-            if self.board.getSquare(move.dest[0], column).getPlayer():
+            if self.board.getSquare(move.x, column).getPlayer():
                 pass
         print()
         print('option-W | columns: ', end=' ')
-        for column in range(move.dest[1] - 1, -1,-1):
+        for column in range(move.y - 1, -1,-1):
             print(column, end=' ')
-            if self.board.getSquare(move.dest[0], column).getPlayer():
+            if self.board.getSquare(move.x, column).getPlayer():
                 pass
         print()
         print('option-N | rows: ', end=' ')
-        for row in range(move.dest[0] - 1, -1,-1):
+        for row in range(move.x - 1, -1,-1):
             print(row, end=' ')
-            if self.board.getSquare(row,move.dest[1]).getPlayer():
+            if self.board.getSquare(row,move.y).getPlayer():
                 pass
         print()
         print('option-S | rows: ', end=' ')
-        for row in range(move.dest[0] + 1, self.board.size):
+        for row in range(move.x + 1, self.board.size):
             print(row, end=' ')
-            if self.board.getSquare(row,move.dest[1]).getPlayer():
+            if self.board.getSquare(row,move.y).getPlayer():
                 pass
         print()
-        print('option-NE | rows: ', end=' ')
+        print('option-NE | cells: ', end=' ')
         offset=1
-        while move.dest
-            print(row, end=' ')
-            if self.board.getSquare(row,move.dest[1]).getPlayer():
+        while move.x-offset>=0 and move.y+offset<self.board.size:
+            print((move.x-offset,move.y+offset), end=' ')
+            if self.board.getSquare(move.x-offset,move.y+offset).getPlayer():
                 pass
+            offset+=1
         print()
 
 

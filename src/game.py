@@ -69,7 +69,7 @@ class abcBoard(ABC):
             row = []
             imgIdx = int(not imgIdx)
             for y in range(int(squaresNum ** 0.5)):
-                row.append(square(self.root, y, x, self.squareSize,
+                row.append(square(self.root, x, y, self.squareSize,
                                   squareImg=squareImgs[(imgIdx := (imgIdx + 1) % len(squareImgs))],
                                   action=self.game.action))
                 row[-1].draw()
