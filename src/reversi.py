@@ -89,6 +89,8 @@ class Game(abcGame):
             else:
                 flipAccepted = False
                 break
+        else:
+            flipAccepted = False
         print()
         if flipAccepted:
             for cand in candidates:
@@ -107,6 +109,8 @@ class Game(abcGame):
             else:
                 flipAccepted = False
                 break
+        else:
+            flipAccepted = False
         print()
         if flipAccepted:
             for cand in candidates:
@@ -125,6 +129,8 @@ class Game(abcGame):
             else:
                 flipAccepted = False
                 break
+        else:
+            flipAccepted = False
         print()
         if flipAccepted:
             for cand in candidates:
@@ -143,6 +149,8 @@ class Game(abcGame):
             else:
                 flipAccepted = False
                 break
+        else:
+            flipAccepted = False
         print()
         if flipAccepted:
             for cand in candidates:
@@ -163,6 +171,8 @@ class Game(abcGame):
                 flipAccepted = False
                 break
             offset += 1
+        else:
+            flipAccepted = False
         print()
         if flipAccepted:
             for cand in candidates:
@@ -183,6 +193,8 @@ class Game(abcGame):
                 flipAccepted = False
                 break
             offset += 1
+        else:
+            flipAccepted = False
         print()
         if flipAccepted:
             for cand in candidates:
@@ -203,6 +215,8 @@ class Game(abcGame):
                 flipAccepted = False
                 break
             offset += 1
+        else:
+            flipAccepted = False
         print()
         if flipAccepted:
             for cand in candidates:
@@ -223,6 +237,8 @@ class Game(abcGame):
                 flipAccepted = False
                 break
             offset += 1
+        else:
+            flipAccepted = False
         print()
         if flipAccepted:
             for cand in candidates:
