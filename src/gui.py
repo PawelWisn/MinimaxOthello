@@ -1,7 +1,6 @@
 import tkinter as tk
-from abc import ABC, abstractmethod
 from PIL import Image, ImageTk
-from src.game import Player
+from src.game import Player, Settings
 
 
 class Square:
@@ -40,6 +39,9 @@ class Square:
         self.action(self)
 
 
+
+
+
 class Window(tk.Tk):
     def __init__(self, width, height, title):
         super(Window, self).__init__()
@@ -48,29 +50,54 @@ class Window(tk.Tk):
         self.title(title)
         self.geometry(f'{width}x{height}')
 
-    def build(self):
+    def build(self):  # to optimize
         self.startButton = tk.Button(self, text='Start')
-        self.startButton.grid(row=1, column=9, sticky=tk.W)
+        self.startButton.grid(row=0, column=9, sticky=tk.W)
         self.restartButton = tk.Button(self, text='Restart')
-        self.restartButton.grid(row=2, column=9, sticky=tk.W)
+        self.restartButton.grid(row=0, column=10, sticky=tk.W)
 
         self.modeVar = tk.IntVar()
         self.modeLabel = tk.Label(self, text="Mode:")
-        self.modeLabel.grid(row=3, column=9, sticky=tk.W)
+        self.modeLabel.grid(row=1, column=9, sticky=tk.W)
         self.modeRadio1 = tk.Radiobutton(self, text="PvsP", variable=self.modeVar, value=0)
         self.modeRadio2 = tk.Radiobutton(self, text="PvsAI", variable=self.modeVar, value=1)
         self.modeRadio3 = tk.Radiobutton(self, text="AIvsAI", variable=self.modeVar, value=2)
         self.modeVar.set(0)
-        self.modeRadio1.grid(row=3, column=10)
-        self.modeRadio2.grid(row=3, column=11)
-        self.modeRadio3.grid(row=3, column=12)
+        self.modeRadio1.grid(row=1, column=10)
+        self.modeRadio2.grid(row=1, column=11)
+        self.modeRadio3.grid(row=1, column=12)
 
-        self.depthLabel = tk.Label(self, text="Depth:")
-        self.depthLabel.grid(row=5, column=9, sticky=tk.W)
-        self.depthVar = tk.StringVar()
-        self.depthInput = tk.Entry(self, width=6, textvariable=self.depthVar)
-        self.depthVar.set('5')
-        self.depthInput.grid(row=5, column=10, sticky=tk.W)
+        self.depthLabelP1 = tk.Label(self, text="Depth AI 1:")
+        self.depthLabelP1.grid(row=2, column=9, sticky=tk.W)
+        self.depthVarP1 = tk.StringVar()
+        self.depthInputP1 = tk.Entry(self, width=6, textvariable=self.depthVarP1)
+        self.depthVarP1.set('5')
+        self.depthInputP1.grid(row=2, column=10, sticky=tk.W)
+
+        self.depthLabelP2 = tk.Label(self, text="Depth AI 2:")
+        self.depthLabelP2.grid(row=3, column=9, sticky=tk.W)
+        self.depthVarP2 = tk.StringVar()
+        self.depthInputP2 = tk.Entry(self, width=6, textvariable=self.depthVarP2)
+        self.depthVarP2.set('5')
+        self.depthInputP2.grid(row=3, column=10, sticky=tk.W)
+
+        self.abVarP1 = tk.IntVar()
+        self.abLabelP1 = tk.Label(self, text="Alpha-Beta\nAI 1:")
+        self.abLabelP1.grid(row=4, column=9)
+        self.abRadio1P1 = tk.Radiobutton(self, text="Off", variable=self.abVarP1, value=0)
+        self.abRadio2P1 = tk.Radiobutton(self, text="On", variable=self.abVarP1, value=1)
+        self.abRadio1P1.grid(row=4, column=10)
+        self.abRadio2P1.grid(row=4, column=11)
+        self.abVarP1.set(0)
+
+        self.abVarP2 = tk.IntVar()
+        self.abLabelP2 = tk.Label(self, text="Alpha-Beta\nAI 2:")
+        self.abLabelP2.grid(row=5, column=9)
+        self.abRadio1P2 = tk.Radiobutton(self, text="Off", variable=self.abVarP2, value=0)
+        self.abRadio2P2 = tk.Radiobutton(self, text="On", variable=self.abVarP2, value=1)
+        self.abRadio1P2.grid(row=5, column=10)
+        self.abRadio2P2.grid(row=5, column=11)
+        self.abVarP2.set(0)
 
         self.heurVarP1 = tk.IntVar()
         self.heurLabelP1 = tk.Label(self, text="Heuristic\nAI 1:")
@@ -92,10 +119,10 @@ class Window(tk.Tk):
 
         self.nextPlayerLabel = tk.Label(self, text="player:")
         self.nextPlayerInfo = tk.Label(self, text="todo")
-        self.nextPlayerLabel.grid(row=8, column=0)
-        self.nextPlayerInfo.grid(row=8, column=1)
+        self.nextPlayerLabel.grid(row=7, column=0)
+        self.nextPlayerInfo.grid(row=7, column=1)
 
-        return self.modeVar, self.depthVar, self.heurVarP1, self.heurVarP2
+        return Settings(self.modeVar, self.depthLabelP1, self.depthLabelP2, self.abVarP1, self.abVarP2, self.heurVarP1, self.heurVarP2)
 
     def run(self):
         self.mainloop()

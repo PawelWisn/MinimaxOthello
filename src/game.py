@@ -7,6 +7,38 @@ class abcHeuristic(ABC):
         pass
 
 
+class Settings:
+    def __init__(self, modeVar, depthLabelP1, depthLabelP2, abVarP1, abVarP2, heurVarP1, heurVarP2):
+        self.modeVar = modeVar
+        self.depthLabelP1 = depthLabelP1
+        self.depthLabelP2 = depthLabelP2
+        self.abVarP1 = abVarP1
+        self.abVarP2 = abVarP2
+        self.heurVarP1 = heurVarP1
+        self.heurVarP2 = heurVarP2
+
+    def getMode(self):
+        return self.modeVar.get()
+
+    def getDepthP1(self):
+        return self.depthLabelP1.get()
+
+    def getDepthP2(self):
+        return self.depthLabelP2.get()
+
+    def isAlphaBetaP1(self):
+        return self.abVarP1.get() == 1
+
+    def isAlphaBetaP2(self):
+        return self.abVarP2.get() == 1
+
+    def getHeurP1(self):
+        return self.heurVarP1.get()
+
+    def getHeurP2(self):
+        return self.heurVarP2.get()
+
+
 class Player:
     def __init__(self, type: str):
         self.type = type[0].upper() + type[1:]
@@ -29,7 +61,7 @@ class abcMove(ABC):
 
 
 class abcBoard(ABC):
-    def __init__(self, root, game, square, squaresNum, squareSize):
+    def __init__(self, root, game, square, squaresNum:int, squareSize:int):
         self.game = game
         self.root = root
         self.squareSize = squareSize
@@ -55,18 +87,14 @@ class abcBoard(ABC):
 
 
 class abcGame(ABC):
-    def __init__(self, window, board, square, squaresNum, squareSize, firstPlayer, secondPlayer, modeVar, depthVar,
-                 heurVarP1,
-                 heurVarP2):
+    def __init__(self, window, board, square, squaresNum: int, squareSize: int, firstPlayer: str, secondPlayer: str,
+                 settings: Settings):
         self.window = window
         self.board = board(window, self, square, squaresNum, squareSize)
         self.player1 = Player(firstPlayer)
         self.player2 = Player(secondPlayer)
         self.currPlayer = self.player1
-        self.modeVar = modeVar
-        self.depthVar = depthVar
-        self.heurVarP1 = heurVarP1
-        self.heurVarP2 = heurVarP2
+        self.settings = settings
 
     @abstractmethod
     def makeMove(self, move: abcMove) -> None:
@@ -75,17 +103,15 @@ class abcGame(ABC):
     # @abstractmethod
     # def getMoves(self) -> list:
     #     pass
-    #
+
     @abstractmethod
     def gameOver(self) -> bool:
         pass
 
-    #
     @abstractmethod
     def evaluate(self) -> float:
         pass
 
-    #
     @abstractmethod
     def updateState(self, state, move: abcMove):
         pass
