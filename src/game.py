@@ -17,26 +17,19 @@ class Settings:
         self.heurVarP1 = heurVarP1
         self.heurVarP2 = heurVarP2
 
-    def getMode(self):
-        return self.modeVar.get()
+    def getMode(self): return self.modeVar.get()
 
-    def getDepthP1(self):
-        return self.depthP1.get()
+    def getDepthP1(self): return self.depthP1.get()
 
-    def getDepthP2(self):
-        return self.depthP2.get()
+    def getDepthP2(self): return self.depthP2.get()
 
-    def isAlphaBetaP1(self):
-        return self.abVarP1.get() == 1
+    def isAlphaBetaP1(self): return self.abVarP1.get() == 1
 
-    def isAlphaBetaP2(self):
-        return self.abVarP2.get() == 1
+    def isAlphaBetaP2(self): return self.abVarP2.get() == 1
 
-    def getHeurP1(self):
-        return self.heurVarP1.get()
+    def getHeurP1(self): return self.heurVarP1.get()
 
-    def getHeurP2(self):
-        return self.heurVarP2.get()
+    def getHeurP2(self): return self.heurVarP2.get()
 
     def __repr__(self):
         return f"Settings: m={self.getMode()},dP1={self.getDepthP1()},dP2={self.getDepthP2()},abP1={self.isAlphaBetaP1()},abP2={self.isAlphaBetaP2()},hP1={self.getHeurP1()},hP2={self.getHeurP2()}"
@@ -68,6 +61,7 @@ class abcBoard(ABC):
         self.game = game
         self.root = root
         self.squareSize = squareSize
+        self.squaresNum=squaresNum
         self.squares = []
         squareImgs = ('darkgreen', 'lightgreen')
         imgIdx = 0

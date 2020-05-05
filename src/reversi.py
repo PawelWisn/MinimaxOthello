@@ -4,8 +4,8 @@ from src.game import abcMove, abcHeuristic, abcGame, abcBoard
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         super(Board, self).__init__(*args, **kwargs)
-        self.freeSquares = len(self.squares) ** 2
-        self.size = int(len(self.squares) ** 0.5)
+        self.freeSquares = self.squaresNum ** 2
+        self.size = int(self.squaresNum ** 0.5)
 
     def updateSquare(self, move: abcMove) -> None:
         self.squares[move.dest[1]][move.dest[0]].update(move.player)
@@ -13,6 +13,14 @@ class Board(abcBoard):
 
 
 class Move(abcMove):
+    @property
+    def x(self):
+        return self.dest[1]
+
+    @property
+    def y(self):
+        return self.dest[0]
+
     @staticmethod
     def isLegal(board: abcBoard, dest, player=None, src=None) -> bool:
         if board.getSquare(dest[1], dest[0]).occupied:
@@ -29,7 +37,7 @@ class Game(abcGame):
         self.weightsHeur = Weights()
 
     def action(self, square):
-        print(repr(square))
+        # print(repr(square))
         dest = square.x, square.y
         if Move.isLegal(self.board, dest):
             move = Move(dest, self.currPlayer)
@@ -37,9 +45,10 @@ class Game(abcGame):
         print(self.evaluate())
 
     def makeMove(self, move: abcMove) -> None:
-        print(repr(self.settings))
+        # print(repr(self.settings))
         self.passCounter = 0
         self.board.updateSquare(move)
+        self.updateState(self.board.squares,move)
         if self.gameOver():
             raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))
 
@@ -68,9 +77,37 @@ class Game(abcGame):
         toFlip = []
         candidates = []
         # row right
+        print('---\noption-E | columns: ', end=' ')
         for column in range(move.dest[1] + 1, self.board.size):
+            print(column,end=' ')
             if self.board.getSquare(move.dest[0], column).getPlayer():
                 pass
+        print()
+        print('option-W | columns: ', end=' ')
+        for column in range(move.dest[1] - 1, -1,-1):
+            print(column, end=' ')
+            if self.board.getSquare(move.dest[0], column).getPlayer():
+                pass
+        print()
+        print('option-N | rows: ', end=' ')
+        for row in range(move.dest[0] - 1, -1,-1):
+            print(row, end=' ')
+            if self.board.getSquare(row,move.dest[1]).getPlayer():
+                pass
+        print()
+        print('option-S | rows: ', end=' ')
+        for row in range(move.dest[0] + 1, self.board.size):
+            print(row, end=' ')
+            if self.board.getSquare(row,move.dest[1]).getPlayer():
+                pass
+        print()
+        print('option-NE | rows: ', end=' ')
+        offset=1
+        while move.dest
+            print(row, end=' ')
+            if self.board.getSquare(row,move.dest[1]).getPlayer():
+                pass
+        print()
 
 
 class CoinParity(abcHeuristic):
