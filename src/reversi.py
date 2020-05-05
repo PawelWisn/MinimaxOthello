@@ -1,4 +1,4 @@
-from src.game import abcMove, abcHeuristic, abcGame, abcBoard
+from src.game import Move, abcHeuristic, abcGame, abcBoard
 
 
 class Board(abcBoard):
@@ -7,27 +7,10 @@ class Board(abcBoard):
         self.freeSquares = self.squaresNum ** 2
         self.size = int(self.squaresNum ** 0.5)
 
-    def updateSquare(self, move: abcMove) -> None:
+    def updateSquare(self, move: Move) -> None:
         print('\nupdating player', move.dest, move.player)
         self.squares[move.x][move.y].update(move.player)
         self.freeSquares -= 1
-
-
-class Move(abcMove):
-    @property
-    def x(self):
-        return self.dest[0]
-
-    @property
-    def y(self):
-        return self.dest[1]
-
-    @staticmethod
-    def isLegal(board: abcBoard, dest, player=None, src=None) -> bool:
-        if board.getSquare(dest[0], dest[1]).occupied:
-            return False
-        # if not change -> False
-        return True
 
 
 class Game(abcGame):
@@ -45,7 +28,7 @@ class Game(abcGame):
             self.makeMove(move)
         print('evaluation:', self.evaluate())
 
-    def makeMove(self, move: abcMove) -> None:
+    def makeMove(self, move: Move) -> None:
         # print(repr(self.settings))
         self.passCounter = 0
         self.board.updateSquare(move)
@@ -74,7 +57,7 @@ class Game(abcGame):
             else:  # Second heuristic
                 return self.weightsHeur.eval(self.board.squares)
 
-    def getFlippablesHorVer(self, row, col, src, init, dst, step=1):
+    def _getFlippablesHorVer(self, row, col, src, init, dst, step=1):
         candidates = []
         for var in range(src + init, dst, step):
             print(var, end=' ')
@@ -89,7 +72,7 @@ class Game(abcGame):
                 break
         return []
 
-    def getFlippablesDiagonal(self, row, col, row_sign, col_sign, condL, condR):
+    def _getFlippablesDiagonal(self, row, col, row_sign, col_sign, condL, condR):
         offset = 1
         candidates = []
         while condL(row, row_sign, offset) and condR(col, col_sign, offset):
@@ -104,26 +87,27 @@ class Game(abcGame):
             offset += 1
         return []
 
-    def getFlippables(self, move: abcMove):
-        candsE = self.getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
-        candsW = self.getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
-        candsN = self.getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
-        candsS = self.getFlippablesHorVer(None, move.y, move.x, 1, self.board.size, 1)
-        candsNE = self.getFlippablesDiagonal(move.x, move.y, -1, 1, lambda a, b, c: a + b * c >= 0,
-                                             lambda a, b, c: a + b * c < self.board.size)
-        candsSE = self.getFlippablesDiagonal(move.x, move.y, 1, 1, lambda a, b, c: a + b * c < self.board.size,
-                                             lambda a, b, c: a + b * c < self.board.size)
-        candsSW = self.getFlippablesDiagonal(move.x, move.y, 1, -1, lambda a, b, c: a + b * c < self.board.size,
-                                             lambda a, b, c: a + b * c >= 0)
-        candsNW = self.getFlippablesDiagonal(move.x, move.y, -1, -1, lambda a, b, c: a + b * c >= 0,
-                                             lambda a, b, c: a + b * c >= 0)
+    def _getFlippables(self, move: Move):
+        '''This method returns a list of taken squares, that should change color after the move.'''
+        candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
+        candsW = self._getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
+        candsN = self._getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
+        candsS = self._getFlippablesHorVer(None, move.y, move.x, 1, self.board.size, 1)
+        candsNE = self._getFlippablesDiagonal(move.x, move.y, -1, 1, lambda a, b, c: a + b * c >= 0,
+                                              lambda a, b, c: a + b * c < self.board.size)
+        candsSE = self._getFlippablesDiagonal(move.x, move.y, 1, 1, lambda a, b, c: a + b * c < self.board.size,
+                                              lambda a, b, c: a + b * c < self.board.size)
+        candsSW = self._getFlippablesDiagonal(move.x, move.y, 1, -1, lambda a, b, c: a + b * c < self.board.size,
+                                              lambda a, b, c: a + b * c >= 0)
+        candsNW = self._getFlippablesDiagonal(move.x, move.y, -1, -1, lambda a, b, c: a + b * c >= 0,
+                                              lambda a, b, c: a + b * c >= 0)
         return candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
 
+    def updateState(self, move: Move):
+        for c in self._getFlippables(move): self.board.updateSquare(c)
 
-    def updateState(self, move: abcMove):
-        for c in self.getFlippables(move): self.board.updateSquare(c)
 
-class CoinParity(abcHeuristic):
+class CoinParity(abcHeuristic):#optimize by map
     def eval(self, state: list) -> int:
         black = white = 0
         for row in state:
@@ -137,7 +121,7 @@ class CoinParity(abcHeuristic):
         return white - black
 
 
-class Weights(abcHeuristic):
+class Weights(abcHeuristic):#optimize by map
     def __init__(self, *args, **kwargs):
         super(Weights, self).__init__(*args, **kwargs)
         self.weights = {}

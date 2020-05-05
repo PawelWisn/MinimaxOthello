@@ -44,16 +44,19 @@ class Player:
         return f"Player: type={self.type}"
 
 
-class abcMove(ABC):
+class Move:
     def __init__(self, dest, player: Player = None, src=None):
         self.dest = dest
         self.src = src
         self.player = player
 
-    @staticmethod
-    @abstractmethod
-    def isLegal(board, dest, player=None, src=None) -> bool:
-        pass
+    @property
+    def x(self):
+        return self.dest[0]
+
+    @property
+    def y(self):
+        return self.dest[1]
 
 
 class abcBoard(ABC):
@@ -61,7 +64,7 @@ class abcBoard(ABC):
         self.game = game
         self.root = root
         self.squareSize = squareSize
-        self.squaresNum=squaresNum
+        self.squaresNum = squaresNum
         self.squares = []
         squareImgs = ('darkgreen', 'lightgreen')
         imgIdx = 0
@@ -79,7 +82,7 @@ class abcBoard(ABC):
         return self.squares[x][y]
 
     @abstractmethod
-    def updateSquare(self, move: abcMove) -> None:
+    def updateSquare(self, move: Move) -> None:
         pass
 
 
@@ -94,7 +97,7 @@ class abcGame(ABC):
         self.settings = settings
 
     @abstractmethod
-    def makeMove(self, move: abcMove) -> None:
+    def makeMove(self, move: Move) -> None:
         pass
 
     # @abstractmethod
@@ -110,9 +113,9 @@ class abcGame(ABC):
         pass
 
     @abstractmethod
-    def updateState(self, move: abcMove):
+    def updateState(self, move: Move)->None:
         pass
 
     @abstractmethod
-    def action(self, square):
+    def action(self, square)->None:
         pass
