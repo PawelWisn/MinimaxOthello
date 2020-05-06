@@ -88,6 +88,9 @@ class abcBoard(ABC):
     def updateSquare(self, move: Move) -> None:
         pass
 
+    def getEmptySquares(self):
+        return self.emptySquares
+
 
 class abcGame(ABC):
     def __init__(self, window, board, square, squaresNum: int, squareSize: int, firstPlayer: str, secondPlayer: str,
@@ -102,7 +105,7 @@ class abcGame(ABC):
 
 
     @abstractmethod
-    def getMoves(self) -> list:
+    def getPossibleMoves(self) -> list:
         pass
 
     @abstractmethod
@@ -122,7 +125,7 @@ class abcGame(ABC):
         pass
 
     @abstractmethod
-    def updateState(self, move: Move) -> None:
+    def updateState(self, toUpdate: list) -> None:
         pass
 
     @abstractmethod

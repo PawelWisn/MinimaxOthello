@@ -24,11 +24,12 @@ class Game(abcGame):
         move = Move((square.x, square.y), self.currPlayer)
         if flippables := self.isLegalMove(move):
             print("click legal")
-            self.commitMove(move,flippables)
+            self.commitMove(move, flippables)
             print('evaluation:', self.evaluate())
             if self.gameOver():
                 raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))
 
+            print(self.getPossibleMoves())
             if True:  # if next player has move
                 self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
             else:
@@ -36,17 +37,22 @@ class Game(abcGame):
                 print('PLAYER HAS NO MOVE - SKIPPING')
         else:
             print("click illegal")
-        print("next player:", self.currPlayer.type,'\n')
+        print("next player:", self.currPlayer.type, '\n')
 
-    def getMoves(self) -> list:
-        pass
+    def getPossibleMoves(self) -> list:
+        legalMoves = []
+        for x in range(self.board.size):
+            for y in range(self.board.size):
+                if not self.board.getSquare(x, y).occupied:
+                    move = Move((x, y), self.currPlayer)
+                    if self.isLegalMove(move):
+                        legalMoves.append(move)
+        return legalMoves
 
-    def commitMove(self, move:Move, toUpdate:list)->None:
-        # self.board.updateSquare(move)
-        self.updateState(move, toUpdate+[move])
+    def commitMove(self, move: Move, toUpdate: list) -> None:
+        self.updateState(toUpdate + [move])
         self.passCounter = 0
         self.freeSquares -= 1
-
 
     def gameOver(self) -> bool:
         return not self.board.freeSquares or self.passCounter == 2
@@ -107,9 +113,8 @@ class Game(abcGame):
                                               lambda a, b, c: a + b * c >= 0)
         return candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
 
-    def updateState(self, move: Move, flippables=None) -> None:
-        flippables = flippables or []
-        for f in flippables: self.board.updateSquare(f)
+    def updateState(self, toUpdate: list) -> None:
+        for f in toUpdate: self.board.updateSquare(f)
 
     def isLegalMove(self, move: Move) -> list:
         if self.board.getSquare(move.x, move.y).occupied: return []
