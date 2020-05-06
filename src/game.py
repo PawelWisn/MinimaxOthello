@@ -97,15 +97,17 @@ class abcGame(ABC):
         self.player1 = Player(firstPlayer)
         self.player2 = Player(secondPlayer)
         self.currPlayer = self.player1
+        self.squaresNum = squaresNum
         self.settings = settings
 
+
     @abstractmethod
-    def makeMove(self, move: Move) -> None:
+    def getMoves(self) -> list:
         pass
 
-    # @abstractmethod
-    # def getMoves(self) -> list:
-    #     pass
+    @abstractmethod
+    def commitMove(self, move:Move, toUpdate:list)->None:
+        pass
 
     @abstractmethod
     def gameOver(self) -> bool:

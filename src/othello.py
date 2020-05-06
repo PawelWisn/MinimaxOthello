@@ -1,44 +1,52 @@
 from src.game import Move, abcHeuristic, abcGame, abcBoard
+from src.minimax import Minimax
 
 
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         super(Board, self).__init__(*args, **kwargs)
-        self.freeSquares = self.squaresNum ** 2
+        self.freeSquares = self.squaresNum
         self.size = int(self.squaresNum ** 0.5)
 
     def updateSquare(self, move: Move) -> None:
         self.squares[move.x][move.y].update(move.player)
-        self.freeSquares -= 1
 
 
 class Game(abcGame):
     def __init__(self, *args, **kwargs):
         super(Game, self).__init__(*args, **kwargs)
         self.passCounter = 0
+        self.freeSquares = self.squaresNum
         self.coinParityHeur = CoinParity()
         self.weightsHeur = Weights()
 
     def action(self, square):
         move = Move((square.x, square.y), self.currPlayer)
-        if flippables:=self.isLegalMove(move):
-            print(repr(move))
-            self.updateState(move,flippables)
-            self.makeMove(move)
-        print('evaluation:', self.evaluate())
+        if flippables := self.isLegalMove(move):
+            print("click legal")
+            self.commitMove(move,flippables)
+            print('evaluation:', self.evaluate())
+            if self.gameOver():
+                raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))
 
-    def makeMove(self, move: Move) -> None:
-        self.passCounter = 0
-        self.board.updateSquare(move)
-        self.updateState(move)
-        if self.gameOver():
-            raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))
-
-        if True:  # if next player has move
-            self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
+            if True:  # if next player has move
+                self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
+            else:
+                self.passCounter += 1
+                print('PLAYER HAS NO MOVE - SKIPPING')
         else:
-            print('PLAYER HAS NO MOVE - SKIPPING')
-            pass  # display  player has no move
+            print("click illegal")
+        print("next player:", self.currPlayer.type,'\n')
+
+    def getMoves(self) -> list:
+        pass
+
+    def commitMove(self, move:Move, toUpdate:list)->None:
+        # self.board.updateSquare(move)
+        self.updateState(move, toUpdate+[move])
+        self.passCounter = 0
+        self.freeSquares -= 1
+
 
     def gameOver(self) -> bool:
         return not self.board.freeSquares or self.passCounter == 2
@@ -102,7 +110,6 @@ class Game(abcGame):
     def updateState(self, move: Move, flippables=None) -> None:
         flippables = flippables or []
         for f in flippables: self.board.updateSquare(f)
-
 
     def isLegalMove(self, move: Move) -> list:
         if self.board.getSquare(move.x, move.y).occupied: return []
