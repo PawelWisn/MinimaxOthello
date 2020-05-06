@@ -26,15 +26,9 @@ class Game(abcGame):
             print("click legal")
             self.commitMove(move, flippables)
             print('evaluation:', self.evaluate())
+            self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
             if self.gameOver():
-                raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))
-
-            print(self.getPossibleMoves())
-            if True:  # if next player has move
-                self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
-            else:
-                self.passCounter += 1
-                print('PLAYER HAS NO MOVE - SKIPPING')
+                raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))#todo change gameover signal
         else:
             print("click illegal")
         print("next player:", self.currPlayer.type, '\n')
@@ -55,7 +49,13 @@ class Game(abcGame):
         self.freeSquares -= 1
 
     def gameOver(self) -> bool:
-        return not self.board.freeSquares or self.passCounter == 2
+        if not self.board.freeSquares: return True  # if no squares left
+        if len(self.getPossibleMoves()) == 0:  # if next player has no moves
+            self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
+            print('PLAYER HAS NO MOVE - SKIPPING')
+            if len(self.getPossibleMoves()) == 0:  # if both players have no moves
+                return True
+        return False
 
     def evaluate(self) -> float:
         if self.currPlayer is self.player1:  # Player1's turn
