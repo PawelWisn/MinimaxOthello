@@ -23,14 +23,14 @@ class Game(abcGame):
     def action(self, square):
         move = Move((square.x, square.y), self.currPlayer)
         if flippables := self.isLegalMove(move):
-            print("click legal")
+            print("click was legal")
             self.commitMove(move, flippables)
             print('evaluation:', self.evaluate())
             self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
             if self.gameOver():
                 raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))#todo change gameover signal
         else:
-            print("click illegal")
+            print("click was illegal")
         print("next player:", self.currPlayer.type, '\n')
 
     def getPossibleMoves(self) -> list:
