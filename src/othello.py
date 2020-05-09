@@ -4,14 +4,18 @@ from src.minimax import Minimax
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         super(Board, self).__init__(*args, **kwargs)
-        self.freeSquares = [*self.squares]
+        print(self.squares)
+        self.freeSquares = []
+        for row in self.squares:
+            for square in row: self.freeSquares.append(square)
+        print(self.freeSquares)
         self.size = int(self.squaresNum ** 0.5)
 
     def updateSquare(self, move: Move, display: bool = True) -> None:
-        if move.player:
-            self.freeSquares.remove(self.getSquare(move.dest.x,move.dest.y))
-        else:
-            self.freeSquares.append(self.getSquare(move.dest.x, move.dest.y))
+        if move.player and (square:=self.getSquare(move.x,move.y)) in self.freeSquares:
+            self.freeSquares.remove(square)
+        elif not move.player:
+            self.freeSquares.append(self.getSquare(move.x, move.y))
         self.squares[move.x][move.y].update(move.player, display)
 
 
@@ -19,7 +23,6 @@ class Game(abcGame):
     def __init__(self, *args, **kwargs):
         super(Game, self).__init__(*args, **kwargs)
         self.passCounter = 0
-        self.freeSquares = self.squaresNum
         self.coinParityHeur = CoinParity()
         self.weightsHeur = Weights()
 
@@ -50,7 +53,6 @@ class Game(abcGame):
     def commitMove(self, move: Move, toUpdate: list, display: bool=True) -> None:
         self.updateState(toUpdate + [move], display)
         self.passCounter = 0
-        self.freeSquares -= 1
 
     def gameOver(self) -> bool:
         if not self.board.freeSquares: return True  # if no squares left
