@@ -85,7 +85,7 @@ class abcBoard(ABC):
         return self.squares[x][y]
 
     @abstractmethod
-    def updateSquare(self, move: Move) -> None:
+    def updateSquare(self, move: Move, display: bool = True) -> None:
         pass
 
     def getEmptySquares(self):
@@ -103,13 +103,12 @@ class abcGame(ABC):
         self.squaresNum = squaresNum
         self.settings = settings
 
-
     @abstractmethod
     def getPossibleMoves(self) -> list:
         pass
 
     @abstractmethod
-    def commitMove(self, move:Move, toUpdate:list)->None:
+    def commitMove(self, move: Move, toUpdate: list, display: bool = True) -> None:
         pass
 
     @abstractmethod
@@ -125,7 +124,7 @@ class abcGame(ABC):
         pass
 
     @abstractmethod
-    def updateState(self, toUpdate: list) -> None:
+    def updateState(self, toUpdate: list, display: bool=True) -> None:
         pass
 
     @abstractmethod

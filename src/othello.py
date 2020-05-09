@@ -1,15 +1,18 @@
 from src.game import Move, abcHeuristic, abcGame, abcBoard
 from src.minimax import Minimax
 
-
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         super(Board, self).__init__(*args, **kwargs)
-        self.freeSquares = self.squaresNum
+        self.freeSquares = [*self.squares]
         self.size = int(self.squaresNum ** 0.5)
 
-    def updateSquare(self, move: Move) -> None:
-        self.squares[move.x][move.y].update(move.player)
+    def updateSquare(self, move: Move, display: bool = True) -> None:
+        if move.player:
+            self.freeSquares.remove(self.getSquare(move.dest.x,move.dest.y))
+        else:
+            self.freeSquares.append(self.getSquare(move.dest.x, move.dest.y))
+        self.squares[move.x][move.y].update(move.player, display)
 
 
 class Game(abcGame):
@@ -28,7 +31,8 @@ class Game(abcGame):
             print('evaluation:', self.evaluate())
             self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
             if self.gameOver():
-                raise ValueError('GAME OVER', self.coinParityHeur.eval(self.board.squares))#todo change gameover signal
+                raise ValueError('GAME OVER',
+                                 self.coinParityHeur.eval(self.board.squares))  # todo change gameover signal
         else:
             print("click was illegal")
         print("next player:", self.currPlayer.type, '\n')
@@ -43,8 +47,8 @@ class Game(abcGame):
                         legalMoves.append(move)
         return legalMoves
 
-    def commitMove(self, move: Move, toUpdate: list) -> None:
-        self.updateState(toUpdate + [move])
+    def commitMove(self, move: Move, toUpdate: list, display: bool=True) -> None:
+        self.updateState(toUpdate + [move], display)
         self.passCounter = 0
         self.freeSquares -= 1
 
@@ -113,8 +117,8 @@ class Game(abcGame):
                                               lambda a, b, c: a + b * c >= 0)
         return candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
 
-    def updateState(self, toUpdate: list) -> None:
-        for f in toUpdate: self.board.updateSquare(f)
+    def updateState(self, toUpdate: list, display: bool=True) -> None:
+        for f in toUpdate: self.board.updateSquare(f, display)
 
     def isLegalMove(self, move: Move) -> list:
         if self.board.getSquare(move.x, move.y).occupied: return []
