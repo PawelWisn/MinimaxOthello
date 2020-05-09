@@ -77,7 +77,7 @@ class abcBoard(ABC):
             for y in range(int(squaresNum ** 0.5)):
                 row.append(square(self.root, x, y, self.squareSize,
                                   squareImg=squareImgs[(imgIdx := (imgIdx + 1) % len(squareImgs))],
-                                  action=self.game.action))
+                                  action=game.action))
                 row[-1].draw()
             self.squares.append(row)
 
@@ -88,8 +88,9 @@ class abcBoard(ABC):
     def updateSquare(self, move: Move, display: bool = True) -> None:
         pass
 
-    def getEmptySquares(self):
-        return self.emptySquares
+    @abstractmethod
+    def __deepcopy__(self, memodict={}):
+        pass
 
 
 class abcGame(ABC):
@@ -104,15 +105,19 @@ class abcGame(ABC):
         self.settings = settings
 
     @abstractmethod
+    def __deepcopy__(self, memodict={}):
+        pass
+
+    @abstractmethod
     def getPossibleMoves(self) -> list:
         pass
 
     @abstractmethod
-    def commitMove(self, move: Move, toUpdate: list, display: bool = True) -> None:
+    def commitMove(self, move: Move, display: bool = True) -> None:
         pass
 
     @abstractmethod
-    def gameOver(self) -> bool:
+    def gameOver(self) -> str:
         pass
 
     @abstractmethod
@@ -120,13 +125,21 @@ class abcGame(ABC):
         pass
 
     @abstractmethod
-    def isLegalMove(self, move: Move) -> list:
+    def isLegalMove(self, move: Move) -> bool:
         pass
 
     @abstractmethod
-    def updateState(self, toUpdate: list, display: bool=True) -> None:
+    def updateState(self, move: Move = None, display: bool = True) -> None:
         pass
 
     @abstractmethod
     def action(self, square) -> None:
+        pass
+
+    @abstractmethod
+    def switchPlayers(self) -> None:
+        pass
+
+    @abstractmethod
+    def getHeuristic(self) -> abcHeuristic:
         pass

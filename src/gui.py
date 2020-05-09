@@ -1,19 +1,21 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from src.game import Player, Settings
+from copy import deepcopy, copy
 
 
 class Square:
     def __init__(self, root, x, y, size, squareImg, action):
-        self.root = root
-        self.x = x
-        self.y = y
-        self.size = size
-        self.kind = squareImg
-        self.photo = None
-        self.occupied = False
-        self.action = action
-        self.player = None
+        if root:
+            self.root = root
+            self.x = x
+            self.y = y
+            self.size = size
+            self.kind = squareImg
+            self.photo = None
+            self.occupied = False
+            self.action = action
+            self.player = None
 
     def __repr__(self):
         return f'Square: x={self.x}, y={self.y}, kind={self.kind}, taken={self.occupied}, player={self.player}'
@@ -23,7 +25,7 @@ class Square:
         self.update()
         self.button.grid(row=self.x, column=self.y)
 
-    def update(self, player: Player=None, display: bool=True) -> None:
+    def update(self, player: Player = None, display: bool = True) -> None:
         if player:
             self.player = player
             self.occupied = True
@@ -41,6 +43,19 @@ class Square:
 
     def handle(self):
         self.action(self)
+
+    def __deepcopy__(self, memodict={}):
+        new = self.__class__(None, None, None, None, None, None)
+        d = copy(self.__dict__)
+        d.pop('root', None)
+        d.pop('button', None)
+        d.pop('photo', None)
+        d.pop('action', None)
+        new.__dict__.update(deepcopy(d))
+        # new.__dict__.update(self.__dict__['button'])
+        # new.__dict__.update(self.__dict__['photo'])
+        # new.__dict__.update(self.__dict__['action'])
+        return new
 
 
 class Window(tk.Tk):
