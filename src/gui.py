@@ -23,10 +23,14 @@ class Square:
         self.update()
         self.button.grid(row=self.x, column=self.y)
 
-    def update(self, player: Player = None) -> None:
+    def update(self, player: Player=None, display: bool=True) -> None:
         if player:
             self.player = player
             self.occupied = True
+        if display:
+            self.display()
+
+    def display(self):
         self.photo = Image.open(f'pictures/{self.kind}{self.player.type if self.player else ""}.png')
         self.photo = self.photo.resize((self.size, self.size), Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.photo)
