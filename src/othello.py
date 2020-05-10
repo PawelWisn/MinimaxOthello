@@ -1,5 +1,5 @@
 from src.game import Move, abcHeuristic, abcGame, abcBoard
-# from src.minimax import Minimax
+from src.minimax import Minimax
 from copy import deepcopy, copy
 from src.gui import Square
 
@@ -23,13 +23,16 @@ class Board(abcBoard):
         self.squares[move.x][move.y].update(move.player, display)
 
     def __deepcopy__(self, memodict={}):
+        # new = self.__class__(None, None, None, None, None)
+        # d = copy(self.__dict__)
+        # d.pop('game', None)
+        # d.pop('root', None)
+        # new.__dict__.update(deepcopy(d))
+        # return new
         new = self.__class__(None, None, None, None, None)
-        d = copy(self.__dict__)
-        print(d)
-        d.pop('game', None)
-        d.pop('root', None)
-        print(d)
-        new.__dict__.update(deepcopy(d))
+        new.__dict__.update(self.__dict__)
+        new.__dict__.pop('squares')
+        new.__dict__['squares'] = deepcopy(self.__dict__['squares'])
         return new
 
 
@@ -42,6 +45,10 @@ class Game(abcGame):
             self.weightsHeur = Weights()
 
     def action(self, square):
+        print('\n\ngetpossible:')
+        print(self.getPossibleMoves())
+        m = Minimax(self)
+        print('minimax:', m.getBestMove())
         move = Move((square.x, square.y), self.currPlayer)
         if self.isLegalMove(move):
             print("click was legal")
@@ -61,13 +68,17 @@ class Game(abcGame):
         legalMoves = []
         for x in range(self.board.size):
             for y in range(self.board.size):
+                if x==2 and y==3:
+                    print("GPS")
                 move = Move((x, y), self.currPlayer)
+                print('move,legal:',move,self.isLegalMove(move))
                 if self.isLegalMove(move):
                     legalMoves.append(move)
         return legalMoves
 
     def commitMove(self, move: Move, display: bool = True) -> None:
         self.updateState(move, display)
+        self.board.updateSquare(move, display)
         self.switchPlayers()
 
     def gameOver(self) -> str:
@@ -134,6 +145,8 @@ class Game(abcGame):
 
     def _getFlippables(self, move: Move):
         '''This method returns a list of taken squares that should change color after the move.'''
+        if move.x==2 and move.y==3:
+            print('HERE')
         candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
         candsW = self._getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
         candsN = self._getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
@@ -146,14 +159,22 @@ class Game(abcGame):
                                               lambda a, b, c: a + b * c >= 0)
         candsNW = self._getFlippablesDiagonal(move.x, move.y, -1, -1, lambda a, b, c: a + b * c >= 0,
                                               lambda a, b, c: a + b * c >= 0)
-        return candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
+        out = candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
+        print('flips:',move,out)
+        if move.x==2 and move.y==3:
+            print('END')
+        return out
 
     def updateState(self, move: Move = None, display: bool = True) -> None:
-        for square in self._getFlippables(move) + [move]: self.board.updateSquare(square, display)
+        for square in self._getFlippables(move): self.board.updateSquare(square, display)
 
     def isLegalMove(self, move: Move) -> bool:
         if self.board.getSquare(move.x, move.y).occupied: return False
-        return len(self._getFlippables(move)) != 0
+        f= self._getFlippables(move)
+        y = len(f)
+        if y:
+            print('y,f:',y,f)#?
+        return y != 0
 
     def getHeuristic(self) -> abcHeuristic:
         if self.currPlayer is self.player1:
@@ -162,17 +183,17 @@ class Game(abcGame):
             return self.coinParityHeur if self.settings.getHeurP2() == 0 else self.weightsHeur
 
     def __deepcopy__(self, memodict={}):
-        print(self.__dict__.keys())
+        # new = self.__class__(None, None, None, None, None, None, None, None)
+        # d = copy(self.__dict__)
+        # d.pop('window', None)
+        # d.pop('settings', None)
+        # new.__dict__.update(deepcopy(d))
+        # new.__dict__['settings'] = self.__dict__['settings']
+        # return new
         new = self.__class__(None, None, None, None, None, None, None, None)
-        d = copy(self.__dict__)
-        print(d)
-        d.pop('window', None)
-        d.pop('settings', None)
-        print(d)
-        new.__dict__.update(deepcopy(d))
-        print(self.__dict__.keys())
-        new.__dict__['settings'] = self.__dict__['settings']
-        print(new.__dict__.keys())
+        new.__dict__.update(self.__dict__)
+        new.__dict__.pop('board',None)
+        new.__dict__['board'] = deepcopy(self.__dict__['board'])
         return new
 
 
@@ -192,7 +213,6 @@ class CoinParity(abcHeuristic):  # optimize by map
 
 class Weights(abcHeuristic):  # optimize by map
     def __init__(self, *args, **kwargs):
-        print('weights')
         super(Weights, self).__init__(*args, **kwargs)
         self.weights = {}
         vals = '4 -3 2 2 2 2 -3 4 -3 -4 -1 -1 -1 -1 -4 -3 2 -1 1 0 0 1 -1 2 2 -1 0 1 1 0 -1 2 2 -1 0 1 1 0 -1 2 2 -1 1 0 0 1 -1 2 -3 -4 -1 -1 -1 -1 -4 -3 4 -3 2 2 2 2 -3 4'.split(

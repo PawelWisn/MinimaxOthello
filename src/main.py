@@ -8,6 +8,10 @@ game.commitMove(Move((3,3),game.player2))
 game.commitMove(Move((3,4),game.player1))
 game.commitMove(Move((4,3),game.player1))
 game.commitMove(Move((4,4),game.player2))
+
+# print('\n\ngetpossible:')
+# print(game.getPossibleMoves())
+
 m = Minimax(game)
-print(m.getBestMove())
+print('minimax:', m.getBestMove())
 window.run()
