@@ -16,9 +16,7 @@ class Minimax:
         self.game = self.gameCopy
         return out
 
-    def search(self, game: abcGame, depth: int, maximizing: bool = True) -> Move:
-        print('depth',depth)
-        print(game.getPossibleMoves())
+    def search(self, game: abcGame, depth: int, maximizing: bool = True):
         if depth == 0 or game.gameOver():
             return self.heuristic.eval(game.board.squares)
         moves = game.getPossibleMoves()

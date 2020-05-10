@@ -45,18 +45,8 @@ class Square:
         self.action(self)
 
     def __deepcopy__(self, memodict={}):
-        # new = self.__class__(None, None, None, None, None, None)
-        # d = copy(self.__dict__)
-        # d.pop('root', None)
-        # d.pop('button', None)
-        # d.pop('photo', None)
-        # d.pop('action', None)
-        # new.__dict__.update(deepcopy(d))
-        # return new
         new = self.__class__(None, None, None, None, None, None)
         new.__dict__.update(self.__dict__)
-        # new.__dict__.pop('squares',None)
-        # new.__dict__.update(deepcopy(self.__dict__['squares']))
         return new
 
 

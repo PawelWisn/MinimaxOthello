@@ -19,9 +19,9 @@ class Settings:
 
     def getMode(self): return self.modeVar.get()
 
-    def getDepthP1(self): return self.depthP1.get()
+    def getDepthP1(self): return int(self.depthP1.get())
 
-    def getDepthP2(self): return self.depthP2.get()
+    def getDepthP2(self): return int(self.depthP2.get())
 
     def isAlphaBetaP1(self): return self.abVarP1.get() == 1
 

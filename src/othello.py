@@ -8,11 +8,9 @@ class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         if args[0]:
             super(Board, self).__init__(*args, **kwargs)
-            print(self.squares)
             self.freeSquares = []
             for row in self.squares:
                 for square in row: self.freeSquares.append(square)
-            print(self.freeSquares)
             self.size = int(self.squaresNum ** 0.5)
 
     def updateSquare(self, move: Move, display: bool = True) -> None:
@@ -23,12 +21,6 @@ class Board(abcBoard):
         self.squares[move.x][move.y].update(move.player, display)
 
     def __deepcopy__(self, memodict={}):
-        # new = self.__class__(None, None, None, None, None)
-        # d = copy(self.__dict__)
-        # d.pop('game', None)
-        # d.pop('root', None)
-        # new.__dict__.update(deepcopy(d))
-        # return new
         new = self.__class__(None, None, None, None, None)
         new.__dict__.update(self.__dict__)
         new.__dict__.pop('squares')
@@ -45,8 +37,6 @@ class Game(abcGame):
             self.weightsHeur = Weights()
 
     def action(self, square):
-        print('\n\ngetpossible:')
-        print(self.getPossibleMoves())
         m = Minimax(self)
         print('minimax:', m.getBestMove())
         move = Move((square.x, square.y), self.currPlayer)
@@ -68,10 +58,7 @@ class Game(abcGame):
         legalMoves = []
         for x in range(self.board.size):
             for y in range(self.board.size):
-                if x==2 and y==3:
-                    print("GPS")
                 move = Move((x, y), self.currPlayer)
-                print('move,legal:',move,self.isLegalMove(move))
                 if self.isLegalMove(move):
                     legalMoves.append(move)
         return legalMoves
@@ -145,8 +132,6 @@ class Game(abcGame):
 
     def _getFlippables(self, move: Move):
         '''This method returns a list of taken squares that should change color after the move.'''
-        if move.x==2 and move.y==3:
-            print('HERE')
         candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
         candsW = self._getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
         candsN = self._getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
@@ -160,9 +145,6 @@ class Game(abcGame):
         candsNW = self._getFlippablesDiagonal(move.x, move.y, -1, -1, lambda a, b, c: a + b * c >= 0,
                                               lambda a, b, c: a + b * c >= 0)
         out = candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
-        print('flips:',move,out)
-        if move.x==2 and move.y==3:
-            print('END')
         return out
 
     def updateState(self, move: Move = None, display: bool = True) -> None:
@@ -170,10 +152,8 @@ class Game(abcGame):
 
     def isLegalMove(self, move: Move) -> bool:
         if self.board.getSquare(move.x, move.y).occupied: return False
-        f= self._getFlippables(move)
+        f = self._getFlippables(move)
         y = len(f)
-        if y:
-            print('y,f:',y,f)#?
         return y != 0
 
     def getHeuristic(self) -> abcHeuristic:
@@ -183,16 +163,9 @@ class Game(abcGame):
             return self.coinParityHeur if self.settings.getHeurP2() == 0 else self.weightsHeur
 
     def __deepcopy__(self, memodict={}):
-        # new = self.__class__(None, None, None, None, None, None, None, None)
-        # d = copy(self.__dict__)
-        # d.pop('window', None)
-        # d.pop('settings', None)
-        # new.__dict__.update(deepcopy(d))
-        # new.__dict__['settings'] = self.__dict__['settings']
-        # return new
         new = self.__class__(None, None, None, None, None, None, None, None)
         new.__dict__.update(self.__dict__)
-        new.__dict__.pop('board',None)
+        new.__dict__.pop('board', None)
         new.__dict__['board'] = deepcopy(self.__dict__['board'])
         return new
 
