@@ -4,7 +4,7 @@ from copy import deepcopy, copy
 from src.gui import Square
 import threading
 from time import time
-
+import matplotlib.pyplot as plt
 
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
@@ -65,10 +65,13 @@ class Game(abcGame):
             if self.settings.getMode() == 2:
                 while True:
                     start = time()
-                    m = Minimax(self).getBestMove()
+                    move = Minimax(self).getBestMove()
                     statistics.append(time() - start)
                     print('time=', statistics[-1])
-                    self.commitMove(m)
+                    if move is None:
+                        self.handlePass()
+                    else:
+                        self.commitMove(move)
                     if (winner := self.gameOver()):
                         print("GAME OVER - The winner is:", winner)
                         break
@@ -81,8 +84,8 @@ class Game(abcGame):
         self.currPlayer = self.player1
         self.passCounter = 0
         self.board = Board(self.window, self, Square, self.squaresNum, self.squareSize)
-        self.commitMove(Move((3, 3), self.player2))
         self.commitMove(Move((3, 4), self.player1))
+        self.commitMove(Move((3, 3), self.player2))
         self.commitMove(Move((4, 3), self.player1))
         self.commitMove(Move((4, 4), self.player2))
 

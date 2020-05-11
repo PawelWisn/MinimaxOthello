@@ -51,6 +51,7 @@ class Minimax:
                 value = self.search(game, depth - 1, True)
 
         if depth == self.depth:
+            if len(self.moveDict.items()) == 0: return None
             if maximizing:
                 return max(self.moveDict.items(), key=lambda x: x[1])[0]
             else:
