@@ -58,6 +58,13 @@ class Window(tk.Tk):
         self.title(title)
         self.geometry(f'{width}x{height}')
 
+    def onClickStart(self, method):
+        print('onlickstart')
+        self.startButton.configure(command=method)
+
+    def onClickRestart(self, method):
+        self.restartButton.configure(command=method)
+
     def build(self):  # to optimize
         self.startButton = tk.Button(self, text='Start')
         self.startButton.grid(row=0, column=9, sticky=tk.W)

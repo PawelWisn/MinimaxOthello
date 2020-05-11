@@ -103,9 +103,19 @@ class abcGame(ABC):
         self.currPlayer = self.player1
         self.squaresNum = squaresNum
         self.settings = settings
+        self.window.onClickStart(self.start)
+        self.window.onClickRestart(self.restart)
 
     @abstractmethod
     def __deepcopy__(self, memodict={}):
+        pass
+
+    @abstractmethod
+    def start(self):
+        pass
+
+    @abstractmethod
+    def restart(self):
         pass
 
     @abstractmethod

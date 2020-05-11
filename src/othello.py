@@ -37,8 +37,6 @@ class Game(abcGame):
             self.weightsHeur = Weights()
 
     def action(self, square):
-        m = Minimax(self)
-        print('minimax:', m.getBestMove())
         move = Move((square.x, square.y), self.currPlayer)
         if self.isLegalMove(move):
             print("click was legal")
@@ -47,9 +45,32 @@ class Game(abcGame):
             if self.gameOver():
                 raise ValueError('GAME OVER',
                                  self.coinParityHeur.eval(self.board.squares))  # todo change gameover signal
+            print('minimax:', Minimax(self).getBestMove())
         else:
             print("click was illegal")
         print("next player:", self.currPlayer.type, '\n')
+
+    def start(self):
+        print('start')
+        mode = self.settings.getMode()
+        if mode == 0:
+            pass
+        elif mode == 1:
+            pass
+            #todo pvai
+        elif mode==2:
+            print('start - mode  2')
+            if self.settings.getMode() == 2:
+                print('mode==2')
+                try:
+                    while True:
+                        self.commitMove(Minimax(self).getBestMove(), display=True)
+                        print('comitted')
+                except ValueError as e:
+                    print(e)
+
+    def restart(self):#todo restart
+        pass
 
     def switchPlayers(self) -> None:
         self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2

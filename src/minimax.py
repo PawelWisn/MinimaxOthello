@@ -13,6 +13,7 @@ class Minimax:
 
     def getBestMove(self):
         out = self.search(self.game, self.depth, self.game.currPlayer is self.game.player1)
+        print('bestmove=',out)
         return out
 
     def search(self, game: abcGame, depth: int, maximizing: bool = True):
@@ -42,7 +43,7 @@ class Minimax:
 
         if depth==self.depth:
             print(self.moveDict.items())
-            if maximizing: return max(self.moveDict.items(),key=lambda x:x[1])
-            else: return min(self.moveDict.items(),key=lambda x:x[1])
+            if maximizing: return max(self.moveDict.items(),key=lambda x:x[1])[0]
+            else: return min(self.moveDict.items(),key=lambda x:x[1])[0]
         else:
             return value
