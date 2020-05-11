@@ -66,6 +66,14 @@ class Window(tk.Tk):
     def onClickRestart(self, method):
         self.restartButton.configure(command=method)
 
+    def showWinnerPopup(self, winner):
+        win = tk.Toplevel()
+        win.wm_title("Game Over")
+        l = tk.Label(win, text='The winner is: ' + winner)
+        l.grid(row=0,column=0)
+        b = tk.Button(win,text="OK",command=win.destroy)
+        b.grid(row=1,column=0)
+
     def build(self):  # to optimize
         self.startButton = tk.Button(self, text='Start')
         self.startButton.grid(row=0, column=9, sticky=tk.W)

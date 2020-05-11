@@ -44,6 +44,7 @@ class Game(abcGame):
             self.commitMove(move)
             if (winner := self.gameOver()):
                 print("GAME OVER - The winner is:", winner)
+                self.window.showWinnerPopup(winner)
             if self.settings.getMode() == 1:
                 move = Minimax(self).getBestMove()
                 if move is None:
@@ -52,6 +53,7 @@ class Game(abcGame):
                     self.commitMove(move)
                 if (winner := self.gameOver()):
                     print("GAME OVER - The winner is:", winner)
+                    self.window.showWinnerPopup(winner)
         else:
             print("click was illegal")
         print("next player:", self.currPlayer.type, '\n')
