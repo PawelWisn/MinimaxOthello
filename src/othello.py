@@ -43,8 +43,8 @@ class Game(abcGame):
             self.commitMove(move)
             print('evaluation:', self.evaluate())
             if self.gameOver():
-                raise ValueError('GAME OVER',
-                                 self.coinParityHeur.eval(self.board.squares))  # todo change gameover signal
+                if (winner := self.gameOver()):
+                    raise ValueError(winner)  # todo change gameover signal
             print('minimax:', Minimax(self).getBestMove())
         else:
             print("click was illegal")

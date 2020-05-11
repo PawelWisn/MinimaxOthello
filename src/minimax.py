@@ -6,7 +6,6 @@ class Minimax:
     def __init__(self, game, alphaBeta=False):
         self.game = deepcopy(game)
         self.alphaBeta = alphaBeta
-        self.heuristic = game.getHeuristic()
         self.depth = game.settings.getDepthP1() if game.currPlayer is game.player1 else game.settings.getDepthP2()
         self.inf = int(1e50)
         self.moveDict = {}
@@ -16,9 +15,18 @@ class Minimax:
         print('bestmove=',out)
         return out
 
+    def getWinnerValue(self,game, winner):
+        if game.player1.type==winner: return self.inf
+        if game.player2.type==winner: return -self.inf
+        return 0
+
     def search(self, game: abcGame, depth: int, maximizing: bool = True):
-        if depth == 0 or game.gameOver():
-            return self.heuristic.eval(game.board.squares)
+        if (winner:=game.gameOver()):
+            return self.getWinnerValue(game,winner)
+
+        if depth == 0:
+            return game.getHeuristic().eval(game.board.squares)
+
         moves = game.getPossibleMoves()
         if maximizing:
             if moves:
