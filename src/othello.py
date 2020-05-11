@@ -6,6 +6,7 @@ import threading
 from time import time
 import matplotlib.pyplot as plt
 
+
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         if args[0]:
@@ -40,16 +41,21 @@ class Game(abcGame):
     def action(self, square):
         move = Move((square.x, square.y), self.currPlayer)
         if self.isLegalMove(move):
-            print("click was legal")
             self.commitMove(move)
-            print('evaluation:', self.evaluate())
-            if self.gameOver():
+            if (winner := self.gameOver()):
+                print("GAME OVER - The winner is:", winner)
+            if self.settings.getMode() == 1:
+                move = Minimax(self).getBestMove()
+                if move is None:
+                    self.handlePass()
+                else:
+                    self.commitMove(move)
                 if (winner := self.gameOver()):
-                    raise ValueError(winner)  # todo change gameover signal
-            print('minimax:', Minimax(self).getBestMove())
+                    print("GAME OVER - The winner is:", winner)
         else:
             print("click was illegal")
         print("next player:", self.currPlayer.type, '\n')
+
 
     def _start(self):
         statistics = []

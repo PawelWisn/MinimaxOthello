@@ -1,5 +1,6 @@
 from src.game import Player, abcBoard, Move, abcGame
 from copy import deepcopy
+from random import choice
 
 
 class Minimax:
@@ -53,8 +54,10 @@ class Minimax:
         if depth == self.depth:
             if len(self.moveDict.items()) == 0: return None
             if maximizing:
-                return max(self.moveDict.items(), key=lambda x: x[1])[0]
+                best = max(self.moveDict.items(), key=lambda x: x[1])[1]
             else:
-                return min(self.moveDict.items(), key=lambda x: x[1])[0]
+                best = min(self.moveDict.items(), key=lambda x: x[1])[1]
+            candidateMoves = list(filter(lambda x: x[1] == best, self.moveDict.items()))
+            return choice(candidateMoves)[0]
         else:
             return value
