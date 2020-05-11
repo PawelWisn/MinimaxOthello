@@ -102,6 +102,7 @@ class abcGame(ABC):
         self.player2 = Player(secondPlayer)
         self.currPlayer = self.player1
         self.squaresNum = squaresNum
+        self.squareSize = squareSize
         self.settings = settings
         self.passCounter = 0
         self.window.onClickStart(self.start)

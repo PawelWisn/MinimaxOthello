@@ -5,6 +5,7 @@ from src.gui import Square
 import threading
 from time import time
 
+
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         if args[0]:
@@ -65,8 +66,8 @@ class Game(abcGame):
                 while True:
                     start = time()
                     m = Minimax(self).getBestMove()
-                    statistics.append(time()-start)
-                    print('time=',statistics[-1])
+                    statistics.append(time() - start)
+                    print('time=', statistics[-1])
                     self.commitMove(m)
                     if (winner := self.gameOver()):
                         print("GAME OVER - The winner is:", winner)
@@ -77,7 +78,13 @@ class Game(abcGame):
         thread.start()
 
     def restart(self):  # todo restart
-        pass
+        self.currPlayer = self.player1
+        self.passCounter = 0
+        self.board = Board(self.window, self, Square, self.squaresNum, self.squareSize)
+        self.commitMove(Move((3, 3), self.player2))
+        self.commitMove(Move((3, 4), self.player1))
+        self.commitMove(Move((4, 3), self.player1))
+        self.commitMove(Move((4, 4), self.player2))
 
     def switchPlayers(self) -> None:
         self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
