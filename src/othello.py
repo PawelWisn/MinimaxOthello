@@ -120,6 +120,7 @@ class Game(abcGame):
         self.switchPlayers()
 
     def handlePass(self) -> None:
+        print("Pass")
         self.passCounter += 1
         self.switchPlayers()
 
@@ -232,7 +233,7 @@ class Weights(abcHeuristic):  # optimize by map
     def __init__(self, *args, **kwargs):
         super(Weights, self).__init__(*args, **kwargs)
         self.weights = {}
-        vals = '4 -3 2 2 2 2 -3 4 -3 -4 -1 -1 -1 -1 -4 -3 2 -1 1 0 0 1 -1 2 2 -1 0 1 1 0 -1 2 2 -1 0 1 1 0 -1 2 2 -1 1 0 0 1 -1 2 -3 -4 -1 -1 -1 -1 -4 -3 4 -3 2 2 2 2 -3 4'.split(
+        vals = '5 -3 2 2 2 2 -3 5 -3 -4 -1 -1 -1 -1 -4 -3 2 -1 1 0 0 1 -1 2 2 -1 0 1 1 0 -1 2 2 -1 0 1 1 0 -1 2 2 -1 1 0 0 1 -1 2 -3 -4 -1 -1 -1 -1 -4 -3 5 -3 2 2 2 2 -3 5'.split(
             ' ')[::-1]
         size = int(len(vals) ** 0.5)
         for x in range(size):
