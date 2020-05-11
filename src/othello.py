@@ -3,7 +3,7 @@ from src.minimax import Minimax
 from copy import deepcopy, copy
 from src.gui import Square
 import threading
-
+from time import time
 
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
@@ -52,6 +52,7 @@ class Game(abcGame):
         print("next player:", self.currPlayer.type, '\n')
 
     def _start(self):
+        statistics = []
         print('start')
         mode = self.settings.getMode()
         if mode == 0:
@@ -60,11 +61,12 @@ class Game(abcGame):
             pass
             # todo pvai
         elif mode == 2:
-            print('start - mode  2')
             if self.settings.getMode() == 2:
-                print('mode==2')
                 while True:
+                    start = time()
                     m = Minimax(self).getBestMove()
+                    statistics.append(time()-start)
+                    print('time=',statistics[-1])
                     self.commitMove(m)
                     if (winner := self.gameOver()):
                         print("GAME OVER - The winner is:", winner)
@@ -92,6 +94,10 @@ class Game(abcGame):
         self.passCounter = 0
         self.updateState(move, display)
         self.board.updateSquare(move, display)
+        self.switchPlayers()
+
+    def handlePass(self) -> None:
+        self.passCounter += 1
         self.switchPlayers()
 
     def gameOver(self) -> str:
@@ -165,7 +171,6 @@ class Game(abcGame):
         if self.board.getSquare(move.x, move.y).occupied:
             return False
         return len(self._getFlippables(move)) != 0
-
 
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None, None, None, None)

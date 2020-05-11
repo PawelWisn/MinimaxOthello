@@ -150,3 +150,7 @@ class abcGame(ABC):
     @abstractmethod
     def switchPlayers(self) -> None:
         pass
+
+    @abstractmethod
+    def handlePass(self) -> None:
+        pass

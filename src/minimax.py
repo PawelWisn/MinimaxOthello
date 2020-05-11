@@ -36,6 +36,7 @@ class Minimax:
                     value = max(value, self.search(copy, depth - 1, False))
                     if depth == self.depth: self.moveDict[move] = value
             else:
+                game.handlePass()
                 value = self.search(game, depth - 1, False)
         else:
             if moves:
@@ -46,6 +47,7 @@ class Minimax:
                     value = min(value, self.search(copy, depth - 1, True))
                     if depth == self.depth: self.moveDict[move] = value
             else:
+                game.handlePass()
                 value = self.search(game, depth - 1, True)
 
         if depth == self.depth:
