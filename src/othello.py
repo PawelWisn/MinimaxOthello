@@ -4,6 +4,7 @@ from copy import deepcopy, copy
 from src.gui import Square
 import threading
 
+
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         if args[0]:
@@ -62,41 +63,40 @@ class Game(abcGame):
             print('start - mode  2')
             if self.settings.getMode() == 2:
                 print('mode==2')
-                try:
-                    while True:
-                        m = Minimax(self).getBestMove()
-                        self.commitMove(m, display=True)
-                        if (winner := self.gameOver()):
-                            raise ValueError(winner)  # todo change gameover signal
-                except ValueError as e:
-                    print(e)
+                while True:
+                    m = Minimax(self).getBestMove()
+                    self.commitMove(m)
+                    if (winner := self.gameOver()):
+                        print("GAME OVER - The winner is:", winner)
+                        break
+
     def start(self):
-        thread = threading.Thread(None,target=self._start)
+        thread = threading.Thread(None, target=self._start)
         thread.start()
 
-    def restart(self):#todo restart
+    def restart(self):  # todo restart
         pass
 
     def switchPlayers(self) -> None:
         self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
 
-    def getPossibleMoves(self) -> list:
+    def getPossibleMoves(self) -> list:  ##
         legalMoves = []
-        for x in range(self.board.size):
-            for y in range(self.board.size):
-                move = Move((x, y), self.currPlayer)
-                if self.isLegalMove(move):
-                    legalMoves.append(move)
+        for freeSquare in self.board.freeSquares:
+            move = Move((freeSquare.x, freeSquare.y), self.currPlayer)
+            if self.isLegalMove(move):
+                legalMoves.append(move)
         return legalMoves
 
     def commitMove(self, move: Move, display: bool = True) -> None:
+        self.passCounter = 0
         self.updateState(move, display)
         self.board.updateSquare(move, display)
         self.switchPlayers()
 
     def gameOver(self) -> str:
         '''Checks if the game is over. If it is, it returns a winner'''
-        if not self.board.freeSquares:
+        if not self.board.freeSquares or self.passCounter == 2:
             evaluate = self.coinParityHeur.eval(self.board.squares)
             if evaluate > 0:
                 return self.player1.type
@@ -104,29 +104,14 @@ class Game(abcGame):
                 return self.player2.type
             else:
                 return "Draw"
-        if len(self.getPossibleMoves()) == 0:  # if next player has no moves
-            self.switchPlayers()
-            if len(self.getPossibleMoves()) == 0:  # if both players have no moves
-                evaluate = self.coinParityHeur.eval(self.board.squares)
-                if evaluate > 0:
-                    return self.player1.type
-                elif evaluate < 0:
-                    return self.player2.type
-                else:
-                    return "Draw"
         return ''
 
     def evaluate(self) -> float:
         if self.currPlayer is self.player1:
-            if self.settings.getHeurP1() == 0:
-                return self.coinParityHeur.eval(self.board.squares)
-            else:
-                return self.weightsHeur.eval(self.board.squares)
+            heur = self.coinParityHeur if self.settings.getHeurP1() == 0 else self.weightsHeur
         else:
-            if self.settings.getHeurP2() == 0:
-                return self.coinParityHeur.eval(self.board.squares)
-            else:
-                return self.weightsHeur.eval(self.board.squares)
+            heur = self.coinParityHeur if self.settings.getHeurP2() == 0 else self.weightsHeur
+        return heur.eval(self.board.squares)
 
     def _getFlippablesHorVer(self, row, col, src, init, dst, step=1):
         candidates = []
@@ -177,16 +162,10 @@ class Game(abcGame):
         for square in self._getFlippables(move): self.board.updateSquare(square, display)
 
     def isLegalMove(self, move: Move) -> bool:
-        if self.board.getSquare(move.x, move.y).occupied: return False
-        f = self._getFlippables(move)
-        y = len(f)
-        return y != 0
+        if self.board.getSquare(move.x, move.y).occupied:
+            return False
+        return len(self._getFlippables(move)) != 0
 
-    def getHeuristic(self) -> abcHeuristic:
-        if self.currPlayer is self.player1:
-            return self.coinParityHeur if self.settings.getHeurP1() == 0 else self.weightsHeur
-        else:
-            return self.coinParityHeur if self.settings.getHeurP2() == 0 else self.weightsHeur
 
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None, None, None, None)

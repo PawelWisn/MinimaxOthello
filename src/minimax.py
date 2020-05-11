@@ -12,20 +12,19 @@ class Minimax:
 
     def getBestMove(self):
         out = self.search(self.game, self.depth, self.game.currPlayer is self.game.player1)
-        print('bestmove=',out)
+        print('bestmove=', out)
         return out
 
-    def getWinnerValue(self,game, winner):
-        if game.player1.type==winner: return self.inf
-        if game.player2.type==winner: return -self.inf
+    def getWinnerValue(self, game, winner):
+        if game.player1.type == winner: return self.inf
+        if game.player2.type == winner: return -self.inf
         return 0
 
     def search(self, game: abcGame, depth: int, maximizing: bool = True):
-        if (winner:=game.gameOver()):
-            return self.getWinnerValue(game,winner)
-
+        if (winner := game.gameOver()):
+            return self.getWinnerValue(game, winner)
         if depth == 0:
-            return game.getHeuristic().eval(game.board.squares)
+            return game.evaluate()
 
         moves = game.getPossibleMoves()
         if maximizing:
@@ -49,8 +48,10 @@ class Minimax:
             else:
                 value = self.search(game, depth - 1, True)
 
-        if depth==self.depth:
-            if maximizing: return max(self.moveDict.items(),key=lambda x:x[1])[0]
-            else: return min(self.moveDict.items(),key=lambda x:x[1])[0]
+        if depth == self.depth:
+            if maximizing:
+                return max(self.moveDict.items(), key=lambda x: x[1])[0]
+            else:
+                return min(self.moveDict.items(), key=lambda x: x[1])[0]
         else:
             return value

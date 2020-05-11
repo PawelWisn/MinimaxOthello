@@ -103,6 +103,7 @@ class abcGame(ABC):
         self.currPlayer = self.player1
         self.squaresNum = squaresNum
         self.settings = settings
+        self.passCounter = 0
         self.window.onClickStart(self.start)
         self.window.onClickRestart(self.restart)
 
@@ -148,8 +149,4 @@ class abcGame(ABC):
 
     @abstractmethod
     def switchPlayers(self) -> None:
-        pass
-
-    @abstractmethod
-    def getHeuristic(self) -> abcHeuristic:
         pass
