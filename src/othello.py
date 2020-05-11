@@ -46,14 +46,7 @@ class Game(abcGame):
                 print("GAME OVER - The winner is:", winner)
                 self.window.showWinnerPopup(winner)
             if self.settings.getMode() == 1:
-                move = Minimax(self).getBestMove()
-                if move is None:
-                    self.handlePass()
-                else:
-                    self.commitMove(move)
-                if (winner := self.gameOver()):
-                    print("GAME OVER - The winner is:", winner)
-                    self.window.showWinnerPopup(winner)
+                self.start()
         else:
             print("click was illegal")
         print("next player:", self.currPlayer.type, '\n')
@@ -66,7 +59,14 @@ class Game(abcGame):
         if mode == 0:
             pass
         elif mode == 1:
-            pass
+            move = Minimax(self).getBestMove()
+            if move is None:
+                self.handlePass()
+            else:
+                self.commitMove(move)
+            if (winner := self.gameOver()):
+                print("GAME OVER - The winner is:", winner)
+                self.window.showWinnerPopup(winner)
             # todo pvai
         elif mode == 2:
             if self.settings.getMode() == 2:
