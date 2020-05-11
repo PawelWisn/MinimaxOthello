@@ -128,8 +128,10 @@ class Window(tk.Tk):
         self.heurLabelP1.grid(row=6, column=9)
         self.heuristicRadio1P1 = tk.Radiobutton(self, text="CoinParity", variable=self.heurVarP1, value=0)
         self.heuristicRadio2P1 = tk.Radiobutton(self, text="Weights", variable=self.heurVarP1, value=1)
+        self.heuristicRadio3P1 = tk.Radiobutton(self, text="Mobility", variable=self.heurVarP1, value=2)
         self.heuristicRadio1P1.grid(row=6, column=10)
         self.heuristicRadio2P1.grid(row=6, column=11)
+        self.heuristicRadio3P1.grid(row=6, column=12)
         self.heurVarP1.set(0)
 
         self.heurVarP2 = tk.IntVar()
@@ -137,8 +139,10 @@ class Window(tk.Tk):
         self.heurLabelP2.grid(row=7, column=9)
         self.heuristicRadio1P2 = tk.Radiobutton(self, text="CoinParity", variable=self.heurVarP2, value=0)
         self.heuristicRadio2P2 = tk.Radiobutton(self, text="Weights", variable=self.heurVarP2, value=1)
+        self.heuristicRadio3P2 = tk.Radiobutton(self, text="Mobility", variable=self.heurVarP2, value=2)
         self.heuristicRadio1P2.grid(row=7, column=10)
         self.heuristicRadio2P2.grid(row=7, column=11)
+        self.heuristicRadio3P2.grid(row=7, column=12)
         self.heurVarP2.set(0)
 
         self.nextPlayerLabel = tk.Label(self, text="player:")

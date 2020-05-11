@@ -37,6 +37,7 @@ class Game(abcGame):
             self.passCounter = 0
             self.coinParityHeur = CoinParity()
             self.weightsHeur = Weights()
+            self.mobility = Mobility()
 
     def action(self, square):
         move = Move((square.x, square.y), self.currPlayer)
@@ -45,12 +46,11 @@ class Game(abcGame):
             if (winner := self.gameOver()):
                 print("GAME OVER - The winner is:", winner)
                 self.window.showWinnerPopup(winner)
-            if self.settings.getMode() == 1:
+            elif self.settings.getMode() == 1:
                 self.start()
         else:
             print("click was illegal")
         print("next player:", self.currPlayer.type, '\n')
-
 
     def _start(self):
         statistics = []
@@ -67,7 +67,10 @@ class Game(abcGame):
             if (winner := self.gameOver()):
                 print("GAME OVER - The winner is:", winner)
                 self.window.showWinnerPopup(winner)
-            # todo pvai
+            else:
+                if not self.getPossibleMoves():
+                    self.handlePass()
+                    self.start()
         elif mode == 2:
             if self.settings.getMode() == 2:
                 while True:
@@ -123,6 +126,7 @@ class Game(abcGame):
     def gameOver(self) -> str:
         '''Checks if the game is over. If it is, it returns a winner'''
         if not self.board.freeSquares or self.passCounter == 2:
+            print('Game over!')
             evaluate = self.coinParityHeur.eval(self.board.squares)
             if evaluate > 0:
                 return self.player1.type
@@ -134,10 +138,20 @@ class Game(abcGame):
 
     def evaluate(self) -> float:
         if self.currPlayer is self.player1:
-            heur = self.coinParityHeur if self.settings.getHeurP1() == 0 else self.weightsHeur
+            if self.settings.getHeurP1() == 0:
+                value = self.coinParityHeur.eval(self.board.squares)
+            elif self.settings.getHeurP1() == 1:
+                value = self.weightsHeur.eval(self.board.squares)
+            else:
+                value = self.mobility.eval(self)
         else:
-            heur = self.coinParityHeur if self.settings.getHeurP2() == 0 else self.weightsHeur
-        return heur.eval(self.board.squares)
+            if self.settings.getHeurP2() == 0:
+                value = self.coinParityHeur.eval(self.board.squares)
+            elif self.settings.getHeurP2() == 1:
+                value = self.weightsHeur.eval(self.board.squares)
+            else:
+                value = self.mobility.eval(self)
+        return value
 
     def _getFlippablesHorVer(self, row, col, src, init, dst, step=1):
         candidates = []
@@ -200,7 +214,8 @@ class Game(abcGame):
 
 
 class CoinParity(abcHeuristic):  # optimize by map
-    def eval(self, state: list) -> int:
+    def eval(self, *args) -> int:
+        state = args[0]
         black = white = 0
         for row in state:
             for square in row:
@@ -224,7 +239,8 @@ class Weights(abcHeuristic):  # optimize by map
             for y in range(size):
                 self.weights[(x, y)] = int(vals.pop())
 
-    def eval(self, state: list) -> int:
+    def eval(self, *args) -> int:
+        state = args[0]
         black = white = 0
         for row in state:
             for square in row:
@@ -235,3 +251,8 @@ class Weights(abcHeuristic):  # optimize by map
                     else:
                         black += self.weights[(square.x, square.y)]
         return black - white
+
+class Mobility(abcHeuristic):  # optimize by map
+    def eval(self, *args) -> int:
+        game = args[0]
+        return len(game.getPossibleMoves())
