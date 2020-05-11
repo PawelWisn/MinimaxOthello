@@ -2,7 +2,7 @@ from src.game import Move, abcHeuristic, abcGame, abcBoard
 from src.minimax import Minimax
 from copy import deepcopy, copy
 from src.gui import Square
-
+import threading
 
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
@@ -50,24 +50,29 @@ class Game(abcGame):
             print("click was illegal")
         print("next player:", self.currPlayer.type, '\n')
 
-    def start(self):
+    def _start(self):
         print('start')
         mode = self.settings.getMode()
         if mode == 0:
             pass
         elif mode == 1:
             pass
-            #todo pvai
-        elif mode==2:
+            # todo pvai
+        elif mode == 2:
             print('start - mode  2')
             if self.settings.getMode() == 2:
                 print('mode==2')
                 try:
                     while True:
-                        self.commitMove(Minimax(self).getBestMove(), display=True)
-                        print('comitted')
+                        m = Minimax(self).getBestMove()
+                        self.commitMove(m, display=True)
+                        if (winner := self.gameOver()):
+                            raise ValueError(winner)  # todo change gameover signal
                 except ValueError as e:
                     print(e)
+    def start(self):
+        thread = threading.Thread(None,target=self._start)
+        thread.start()
 
     def restart(self):#todo restart
         pass

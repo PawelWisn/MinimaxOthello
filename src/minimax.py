@@ -42,7 +42,6 @@ class Minimax:
                 value = self.search(game, depth - 1, True)
 
         if depth==self.depth:
-            print(self.moveDict.items())
             if maximizing: return max(self.moveDict.items(),key=lambda x:x[1])[0]
             else: return min(self.moveDict.items(),key=lambda x:x[1])[0]
         else:
