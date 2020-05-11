@@ -25,7 +25,6 @@ class Board(abcBoard):
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None)
         new.__dict__.update(self.__dict__)
-        new.__dict__.pop('squares')
         new.__dict__['squares'] = deepcopy(self.__dict__['squares'])
         return new
 
@@ -66,7 +65,8 @@ class Game(abcGame):
                 while True:
                     start = time()
                     move = Minimax(self).getBestMove()
-                    statistics.append(time() - start)
+                    if self.currPlayer is self.player1:
+                        statistics.append(time() - start)
                     print('time=', statistics[-1])
                     if move is None:
                         self.handlePass()
@@ -75,6 +75,8 @@ class Game(abcGame):
                     if (winner := self.gameOver()):
                         print("GAME OVER - The winner is:", winner)
                         break
+                plt.plot([x for x in range(len(statistics))], statistics)
+                plt.show()
 
     def start(self):
         thread = threading.Thread(None, target=self._start)
@@ -185,7 +187,6 @@ class Game(abcGame):
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None, None, None, None)
         new.__dict__.update(self.__dict__)
-        new.__dict__.pop('board', None)
         new.__dict__['board'] = deepcopy(self.__dict__['board'])
         return new
 

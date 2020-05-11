@@ -47,6 +47,7 @@ class Square:
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None, None)
         new.__dict__.update(self.__dict__)
+        new.__dict__['occupied'] = deepcopy(self.__dict__['occupied'])
         return new
 
 
