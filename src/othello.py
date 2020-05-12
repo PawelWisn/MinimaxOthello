@@ -256,4 +256,10 @@ class Weights(abcHeuristic):  # optimize by map
 class Mobility(abcHeuristic):  # optimize by map
     def eval(self, *args) -> int:
         game = args[0]
-        return len(game.getPossibleMoves())
+        temp = game.currPlayer
+        game.currPlayer=game.player1
+        black = len(game.getPossibleMoves())
+        game.currPlayer = game.player2
+        white = len(game.getPossibleMoves())
+        game.currPlayer = temp
+        return black-white
