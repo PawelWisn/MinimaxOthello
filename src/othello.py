@@ -3,10 +3,10 @@ from src.minimax import Minimax
 from copy import deepcopy, copy
 from src.gui import Square
 import threading
-from time import time
+from time import time, sleep
 import matplotlib.pyplot as plt
 
-
+winners={'Black':0,'White':0,'Draw':0}#test
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         if args[0]:
@@ -53,8 +53,7 @@ class Game(abcGame):
         print("next player:", self.currPlayer.type, '\n')
 
     def _start(self):
-        statistics = []
-        print('start')
+        statistics = []#test
         mode = self.settings.getMode()
         if mode == 0:
             pass
@@ -74,24 +73,30 @@ class Game(abcGame):
         elif mode == 2:
             if self.settings.getMode() == 2:
                 while True:
-                    start = time()
+                    start = time()#test
                     move = Minimax(self).getBestMove()
-                    if self.currPlayer is self.player1:
-                        statistics.append(time() - start)
-                    print('time=', statistics[-1])
+                    if self.currPlayer is self.player1:#test
+                        statistics.append(time() - start)#test
+                    #print(move, ', time=', statistics[-1])
                     if move is None:
                         self.handlePass()
                     else:
+                        if isinstance(move, int): print(move)
                         self.commitMove(move)
                     if (winner := self.gameOver()):
-                        print("GAME OVER - The winner is:", winner)
+                        #print("GAME OVER - The winner is:", winner)
+                        winners[winner] += 1#test
+                        print(winners)#test
+                        self.restart()#test
+                        self.start()#test
                         break
-                plt.plot([x for x in range(len(statistics))], statistics)
-                plt.show()
+                # plt.plot([x for x in range(len(statistics))], statistics)#test
+                # plt.show()#test
 
     def start(self):
         thread = threading.Thread(None, target=self._start)
         thread.start()
+
 
     def restart(self):  # todo restart
         self.currPlayer = self.player1
@@ -120,14 +125,12 @@ class Game(abcGame):
         self.switchPlayers()
 
     def handlePass(self) -> None:
-        print("Pass")
         self.passCounter += 1
         self.switchPlayers()
 
     def gameOver(self) -> str:
         '''Checks if the game is over. If it is, it returns a winner'''
         if not self.board.freeSquares or self.passCounter == 2:
-            print('Game over!')
             evaluate = self.coinParityHeur.eval(self.board.squares)
             if evaluate > 0:
                 return self.player1.type
@@ -184,7 +187,10 @@ class Game(abcGame):
 
     def _getFlippables(self, move: Move):
         '''This method returns a list of taken squares that should change color after the move.'''
-        candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
+        try:
+            candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
+        except AttributeError:
+            print('err',move)
         candsW = self._getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
         candsN = self._getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
         candsS = self._getFlippablesHorVer(None, move.y, move.x, 1, self.board.size, 1)

@@ -13,7 +13,7 @@ class Minimax:
 
     def getBestMove(self):
         out = self.search(self.game, self.depth, self.game.currPlayer is self.game.player1)
-        print('bestmove=', out)
+        if isinstance(out, int): raise ValueError("WTF")
         return out
 
     def getWinnerValue(self, game, winner):
