@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from game import Player, Settings
+from src.game import Player, Settings
 from copy import deepcopy, copy
 
 

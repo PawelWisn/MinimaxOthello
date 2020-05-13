@@ -1,7 +1,7 @@
-from game import Move, abcHeuristic, abcGame, abcBoard
-from minimax import Minimax
+from src.game import Move, abcHeuristic, abcGame, abcBoard
+from src.minimax import Minimax
 from copy import deepcopy, copy
-from gui import Square
+from src.gui import Square
 import threading
 from time import time, sleep
 import matplotlib.pyplot as plt
@@ -94,7 +94,7 @@ class Game(abcGame):
                         self.handlePass()
                     else:
                         if isinstance(move, int): print(move)
-                        self.commitMove(move,False)
+                        self.commitMove(move)
                     if (winner := self.gameOver()):
                         print("Game length:", time() - gamestart)
                         print("GAME OVER - The winner is:", winner)

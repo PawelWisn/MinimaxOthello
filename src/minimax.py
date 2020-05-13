@@ -1,4 +1,4 @@
-from game import Player, abcBoard, Move, abcGame
+from src.game import Player, abcBoard, Move, abcGame
 from copy import deepcopy
 from random import choice
 
