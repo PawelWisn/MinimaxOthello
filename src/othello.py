@@ -44,6 +44,10 @@ class Game(abcGame):
             self.coinParityHeur = CoinParity()
             self.weightsHeur = Weights()
             self.mobility = Mobility()
+            self.commitMove(Move((3, 3), self.player2))
+            self.commitMove(Move((3, 4), self.player1))
+            self.commitMove(Move((4, 3), self.player1))
+            self.commitMove(Move((4, 4), self.player2))
 
     def action(self, square):
         move = Move((square.x, square.y), self.currPlayer)
