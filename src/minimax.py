@@ -1,4 +1,4 @@
-from src.game import Player, abcBoard, Move, abcGame
+from src.game import abcGame
 from copy import deepcopy
 from random import choice
 
@@ -16,10 +16,9 @@ class Minimax:
     def getBestMove(self):
         return self.search(self.game, self.depth, self.game.currPlayer is self.game.player1, self.alpha, self.beta)
 
-
     def getWinnerValue(self, game, winner):
-        if game.player1.type == winner: return int(1e45)
-        if game.player2.type == winner: return -int(1e45)
+        if game.player1.type == winner: return self.inf
+        if game.player2.type == winner: return -self.inf
         return 0
 
     def search(self, game: abcGame, depth: int, maximizing: bool = True, alpha=None, beta=None):
@@ -35,10 +34,10 @@ class Minimax:
                         copy = deepcopy(game)
                         copy.commitMove(move, display=False)
                         value = self.search(copy, depth - 1, False, alpha, beta)
-                        alpha = max(alpha, value)
-                        if alpha>=beta: return alpha
-                        value = alpha
                         if depth == self.depth: self.moveDict[move] = value
+                        alpha = max(alpha, value)
+                        if alpha >= beta: break
+                    value = alpha
                 else:
                     value = -self.inf
                     for move in moves:
@@ -56,10 +55,11 @@ class Minimax:
                         copy = deepcopy(game)
                         copy.commitMove(move, display=False)
                         value = self.search(copy, depth - 1, True, alpha, beta)
-                        beta = min(beta, value)
-                        if alpha>=beta: return alpha
-                        value = beta
                         if depth == self.depth: self.moveDict[move] = value
+                        beta = min(beta, value)
+                        if alpha >= beta: break
+                    value = beta
+
                 else:
                     value = self.inf
                     for move in moves:
