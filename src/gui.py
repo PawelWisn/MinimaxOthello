@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from src.game import Player, Settings
+from game import Player, Settings
 from copy import deepcopy, copy
 
 
@@ -60,7 +60,6 @@ class Window(tk.Tk):
         self.geometry(f'{width}x{height}')
 
     def onClickStart(self, method):
-        print('onlickstart')
         self.startButton.configure(command=method)
 
     def onClickRestart(self, method):
@@ -86,7 +85,7 @@ class Window(tk.Tk):
         self.modeRadio1 = tk.Radiobutton(self, text="PvsP", variable=self.modeVar, value=0)
         self.modeRadio2 = tk.Radiobutton(self, text="PvsAI", variable=self.modeVar, value=1)
         self.modeRadio3 = tk.Radiobutton(self, text="AIvsAI", variable=self.modeVar, value=2)
-        self.modeVar.set(0)
+        self.modeVar.set(2)
         self.modeRadio1.grid(row=1, column=10)
         self.modeRadio2.grid(row=1, column=11)
         self.modeRadio3.grid(row=1, column=12)
@@ -95,14 +94,14 @@ class Window(tk.Tk):
         self.depthLabelP1.grid(row=2, column=9, sticky=tk.W)
         self.depthVarP1 = tk.StringVar()
         self.depthInputP1 = tk.Entry(self, width=6, textvariable=self.depthVarP1)
-        self.depthVarP1.set('5')
+        self.depthVarP1.set('3')
         self.depthInputP1.grid(row=2, column=10, sticky=tk.W)
 
         self.depthLabelP2 = tk.Label(self, text="Depth AI 2:")
         self.depthLabelP2.grid(row=3, column=9, sticky=tk.W)
         self.depthVarP2 = tk.StringVar()
         self.depthInputP2 = tk.Entry(self, width=6, textvariable=self.depthVarP2)
-        self.depthVarP2.set('5')
+        self.depthVarP2.set('3')
         self.depthInputP2.grid(row=3, column=10, sticky=tk.W)
 
         self.abVarP1 = tk.IntVar()
@@ -112,7 +111,7 @@ class Window(tk.Tk):
         self.abRadio2P1 = tk.Radiobutton(self, text="On", variable=self.abVarP1, value=1)
         self.abRadio1P1.grid(row=4, column=10)
         self.abRadio2P1.grid(row=4, column=11)
-        self.abVarP1.set(0)
+        self.abVarP1.set(1)
 
         self.abVarP2 = tk.IntVar()
         self.abLabelP2 = tk.Label(self, text="Alpha-Beta\nAI 2:")
@@ -121,7 +120,7 @@ class Window(tk.Tk):
         self.abRadio2P2 = tk.Radiobutton(self, text="On", variable=self.abVarP2, value=1)
         self.abRadio1P2.grid(row=5, column=10)
         self.abRadio2P2.grid(row=5, column=11)
-        self.abVarP2.set(0)
+        self.abVarP2.set(1)
 
         self.heurVarP1 = tk.IntVar()
         self.heurLabelP1 = tk.Label(self, text="Heuristic\nAI 1:")

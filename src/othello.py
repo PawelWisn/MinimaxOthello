@@ -1,12 +1,14 @@
-from src.game import Move, abcHeuristic, abcGame, abcBoard
-from src.minimax import Minimax
+from game import Move, abcHeuristic, abcGame, abcBoard
+from minimax import Minimax
 from copy import deepcopy, copy
-from src.gui import Square
+from gui import Square
 import threading
 from time import time, sleep
 import matplotlib.pyplot as plt
 
-winners={'Black':0,'White':0,'Draw':0}#test
+winners = {'Black': 0, 'White': 0, 'Draw': 0}  # test
+
+
 class Board(abcBoard):
     def __init__(self, *args, **kwargs):
         if args[0]:
@@ -27,6 +29,10 @@ class Board(abcBoard):
         new = self.__class__(None, None, None, None, None)
         new.__dict__.update(self.__dict__)
         new.__dict__['squares'] = deepcopy(self.__dict__['squares'])
+        newFreeSquares = []
+        for oldFreeSquare in self.freeSquares:
+            newFreeSquares.append(new.getSquare(oldFreeSquare.x, oldFreeSquare.y))
+        new.__dict__['freeSquares'] = newFreeSquares
         return new
 
 
@@ -53,7 +59,9 @@ class Game(abcGame):
         print("next player:", self.currPlayer.type, '\n')
 
     def _start(self):
-        statistics = []#test
+        statistics = []  # test
+        statistics_black = []  # test
+        statistics_white = []  # test
         mode = self.settings.getMode()
         if mode == 0:
             pass
@@ -72,31 +80,46 @@ class Game(abcGame):
                     self.start()
         elif mode == 2:
             if self.settings.getMode() == 2:
+                gamestart = time()
                 while True:
-                    start = time()#test
+                    start = time()  # test
                     move = Minimax(self).getBestMove()
-                    if self.currPlayer is self.player1:#test
-                        statistics.append(time() - start)#test
-                    #print(move, ', time=', statistics[-1])
+                    statistics.append(time() - start)  # test
+                    if self.currPlayer is self.player1:  # test
+                        statistics_black.append(time() - start)  # test
+                    else:
+                        statistics_white.append(time() - start)  # test
+                    # print(move, ', time=', time() - start)  # test
                     if move is None:
                         self.handlePass()
                     else:
                         if isinstance(move, int): print(move)
-                        self.commitMove(move)
+                        self.commitMove(move,False)
                     if (winner := self.gameOver()):
-                        #print("GAME OVER - The winner is:", winner)
-                        winners[winner] += 1#test
-                        print(winners)#test
-                        self.restart()#test
-                        self.start()#test
+                        print("Game length:", time() - gamestart)
+                        print("GAME OVER - The winner is:", winner)
+                        winners[winner] += 1  # test
+                        print(winners)  # test
+                        self.restart()  # test
+                        if sum(winners.values())<25:
+                            self.start()#test
+                        else:
+                            winners['Black'] = 0
+                            winners['White'] = 0
+                            winners['Draw'] = 0
                         break
-                # plt.plot([x for x in range(len(statistics))], statistics)#test
-                # plt.show()#test
+                # plt.plot([x for x in range(len(statistics_black))], statistics_black, label="Pure minimax",
+                #          color='green')  # test
+                # plt.plot([x for x in range(len(statistics_white))], statistics_white,
+                #          label="Minimax with alpha-beta pruning", color='orange')  # test
+                # plt.legend()
+                # plt.xlabel('Ply number')
+                # plt.ylabel('Time [s]')
+                # plt.show()  # test
 
     def start(self):
         thread = threading.Thread(None, target=self._start)
         thread.start()
-
 
     def restart(self):  # todo restart
         self.currPlayer = self.player1
@@ -190,7 +213,7 @@ class Game(abcGame):
         try:
             candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
         except AttributeError:
-            print('err',move)
+            print('err', move)
         candsW = self._getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
         candsN = self._getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
         candsS = self._getFlippablesHorVer(None, move.y, move.x, 1, self.board.size, 1)
@@ -259,13 +282,14 @@ class Weights(abcHeuristic):  # optimize by map
                         black += self.weights[(square.x, square.y)]
         return black - white
 
+
 class Mobility(abcHeuristic):  # optimize by map
     def eval(self, *args) -> int:
         game = args[0]
         temp = game.currPlayer
-        game.currPlayer=game.player1
+        game.currPlayer = game.player1
         black = len(game.getPossibleMoves())
         game.currPlayer = game.player2
         white = len(game.getPossibleMoves())
         game.currPlayer = temp
-        return black-white
+        return black - white

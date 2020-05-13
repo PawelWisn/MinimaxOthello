@@ -38,7 +38,6 @@ class Settings:
 class Player:
     def __init__(self, type: str):
         self.type = type[0].upper() + type[1:]
-        print(self.type)
 
     def __str__(self):
         return f"Player: type={self.type}"
