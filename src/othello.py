@@ -44,8 +44,8 @@ class Game(abcGame):
             self.coinParityHeur = CoinParity()
             self.weightsHeur = Weights()
             self.mobility = Mobility()
-            self.commitMove(Move((3, 3), self.player2))
             self.commitMove(Move((3, 4), self.player1))
+            self.commitMove(Move((3, 3), self.player2))
             self.commitMove(Move((4, 3), self.player1))
             self.commitMove(Move((4, 4), self.player2))
 
@@ -104,13 +104,13 @@ class Game(abcGame):
                         print("GAME OVER - The winner is:", winner)
                         winners[winner] += 1  # test
                         print(winners)  # test
-                        self.restart()  # test
-                        if sum(winners.values()) < 25:
-                            self.start()  # test
-                        else:
-                            winners['Black'] = 0
-                            winners['White'] = 0
-                            winners['Draw'] = 0
+                        # self.restart()  # test
+                        # if sum(winners.values()) < 25:
+                        #     self.start()  # test
+                        # else:
+                        #     winners['Black'] = 0
+                        #     winners['White'] = 0
+                        #     winners['Draw'] = 0
                         break
                 # plt.plot([x for x in range(len(statistics_black))], statistics_black, label="Pure minimax",
                 #          color='green')  # test
@@ -184,7 +184,7 @@ class Game(abcGame):
                 value = self.mobility.eval(self)
         return value
 
-    def _getFlippablesHorVer(self, row, col, src, init, dst, step=1):
+    def _getFlipsHorVer(self, row, col, src, init, dst, step=1):
         candidates = []
         for var in range(src + init, dst, step):
             r = row if row is not None else var
@@ -198,7 +198,7 @@ class Game(abcGame):
                 break
         return []
 
-    def _getFlippablesDiagonal(self, row, col, row_sign, col_sign, condL, condR):
+    def _getFlipsDiag(self, row, col, row_sign, col_sign, condL, condR):
         offset = 1
         candidates = []
         while condL(row, row_sign, offset) and condR(col, col_sign, offset):
@@ -212,30 +212,30 @@ class Game(abcGame):
             offset += 1
         return []
 
-    def _getFlippables(self, move: Move):
+    def _getFlips(self, move: Move):
         '''This method returns a list of taken squares that should change color after the move.'''
-        candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
-        candsW = self._getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
-        candsN = self._getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
-        candsS = self._getFlippablesHorVer(None, move.y, move.x, 1, self.board.size, 1)
-        candsNE = self._getFlippablesDiagonal(move.x, move.y, -1, 1, lambda a, b, c: a + b * c >= 0,
-                                              lambda a, b, c: a + b * c < self.board.size)
-        candsSE = self._getFlippablesDiagonal(move.x, move.y, 1, 1, lambda a, b, c: a + b * c < self.board.size,
-                                              lambda a, b, c: a + b * c < self.board.size)
-        candsSW = self._getFlippablesDiagonal(move.x, move.y, 1, -1, lambda a, b, c: a + b * c < self.board.size,
-                                              lambda a, b, c: a + b * c >= 0)
-        candsNW = self._getFlippablesDiagonal(move.x, move.y, -1, -1, lambda a, b, c: a + b * c >= 0,
-                                              lambda a, b, c: a + b * c >= 0)
+        candsE = self._getFlipsHorVer(move.x, None, move.y, 1, self.board.size, 1)
+        candsW = self._getFlipsHorVer(move.x, None, move.y, -1, -1, -1)
+        candsN = self._getFlipsHorVer(None, move.y, move.x, -1, -1, -1)
+        candsS = self._getFlipsHorVer(None, move.y, move.x, 1, self.board.size, 1)
+        candsNE = self._getFlipsDiag(move.x, move.y, -1, 1, lambda a, b, c: a + b * c >= 0,
+                                     lambda a, b, c: a + b * c < self.board.size)
+        candsSE = self._getFlipsDiag(move.x, move.y, 1, 1, lambda a, b, c: a + b * c < self.board.size,
+                                     lambda a, b, c: a + b * c < self.board.size)
+        candsSW = self._getFlipsDiag(move.x, move.y, 1, -1, lambda a, b, c: a + b * c < self.board.size,
+                                     lambda a, b, c: a + b * c >= 0)
+        candsNW = self._getFlipsDiag(move.x, move.y, -1, -1, lambda a, b, c: a + b * c >= 0,
+                                     lambda a, b, c: a + b * c >= 0)
         out = candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
         return out
 
     def updateState(self, move: Move = None, display: bool = True) -> None:
-        for square in self._getFlippables(move): self.board.updateSquare(square, display)
+        for square in self._getFlips(move): self.board.updateSquare(square, display)
 
     def isLegalMove(self, move: Move) -> bool:
         if self.board.getSquare(move.x, move.y).occupied():
             return False
-        return len(self._getFlippables(move)) != 0
+        return len(self._getFlips(move)) != 0
 
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None, None, None, None)
