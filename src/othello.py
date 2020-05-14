@@ -105,8 +105,8 @@ class Game(abcGame):
                         winners[winner] += 1  # test
                         print(winners)  # test
                         self.restart()  # test
-                        if sum(winners.values())<25:
-                            self.start()#test
+                        if sum(winners.values()) < 25:
+                            self.start()  # test
                         else:
                             winners['Black'] = 0
                             winners['White'] = 0
@@ -214,10 +214,7 @@ class Game(abcGame):
 
     def _getFlippables(self, move: Move):
         '''This method returns a list of taken squares that should change color after the move.'''
-        try:
-            candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
-        except AttributeError:
-            print('err', move)
+        candsE = self._getFlippablesHorVer(move.x, None, move.y, 1, self.board.size, 1)
         candsW = self._getFlippablesHorVer(move.x, None, move.y, -1, -1, -1)
         candsN = self._getFlippablesHorVer(None, move.y, move.x, -1, -1, -1)
         candsS = self._getFlippablesHorVer(None, move.y, move.x, 1, self.board.size, 1)
@@ -236,7 +233,7 @@ class Game(abcGame):
         for square in self._getFlippables(move): self.board.updateSquare(square, display)
 
     def isLegalMove(self, move: Move) -> bool:
-        if self.board.getSquare(move.x, move.y).occupied:
+        if self.board.getSquare(move.x, move.y).occupied():
             return False
         return len(self._getFlippables(move)) != 0
 

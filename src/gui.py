@@ -13,12 +13,11 @@ class Square:
             self.size = size
             self.kind = squareImg
             self.photo = None
-            self.occupied = False
             self.action = action
             self.player = None
 
     def __repr__(self):
-        return f'Square: x={self.x}, y={self.y}, kind={self.kind}, taken={self.occupied}, player={self.player}'
+        return f'Square: x={self.x}, y={self.y}, kind={self.kind}, player={self.player}'
 
     def draw(self) -> None:
         self.button = tk.Button(self.root, command=self.handle)
@@ -28,7 +27,6 @@ class Square:
     def update(self, player: Player = None, display: bool = True) -> None:
         if player:
             self.player = player
-            self.occupied = True
         if display:
             self.display()
 
@@ -44,10 +42,12 @@ class Square:
     def handle(self):
         self.action(self)
 
+    def occupied(self):
+        return self.player is not None
+
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None, None)
         new.__dict__.update(self.__dict__)
-        new.__dict__['occupied'] = deepcopy(self.__dict__['occupied'])
         return new
 
 
