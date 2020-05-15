@@ -1,12 +1,22 @@
-from src.game import Move, abcHeuristic, abcGame, abcBoard
+from src.game import abcMove, abcHeuristic, abcGame, abcBoard, Player
 from src.minimax import Minimax
-from copy import deepcopy, copy
+from copy import deepcopy
 from src.gui import Square
 import threading
-from time import time, sleep
+from time import time
 import matplotlib.pyplot as plt
 
 winners = {'Black': 0, 'White': 0, 'Draw': 0}  # test
+
+
+class Move(abcMove):
+    @property
+    def x(self):
+        return self.dest[0]
+
+    @property
+    def y(self):
+        return self.dest[1]
 
 
 class Board(abcBoard):
@@ -50,6 +60,7 @@ class Game(abcGame):
             self.commitMove(Move((4, 4), self.player2))
 
     def action(self, square):
+        '''Is invoked when a square is pressed'''
         move = Move((square.x, square.y), self.currPlayer)
         if self.isLegalMove(move):
             self.commitMove(move)
@@ -104,7 +115,9 @@ class Game(abcGame):
                         print("GAME OVER - The winner is:", winner)
                         winners[winner] += 1  # test
                         print(winners)  # test
-                        # self.restart()  # test
+                        self.restart()  # test
+                        print('MC=', Minimax.mC)
+                        Minimax.mC = 0
                         # if sum(winners.values()) < 25:
                         #     self.start()  # test
                         # else:
@@ -112,20 +125,22 @@ class Game(abcGame):
                         #     winners['White'] = 0
                         #     winners['Draw'] = 0
                         break
-                # plt.plot([x for x in range(len(statistics_black))], statistics_black, label="Pure minimax",
+                # plt.plot([x for x in range(len(statistics_black))], statistics_black, label="Minimax",
                 #          color='green')  # test
                 # plt.plot([x for x in range(len(statistics_white))], statistics_white,
-                #          label="Minimax with alpha-beta pruning", color='orange')  # test
+                #          label="Alpha-beta pruning", color='orange')  # test
                 # plt.legend()
+                # plt.title('Average time per move for depth = 3')
                 # plt.xlabel('Ply number')
                 # plt.ylabel('Time [s]')
                 # plt.show()  # test
 
     def start(self):
+        '''Runs another thread so that progress is visible on gui'''
         thread = threading.Thread(None, target=self._start)
         thread.start()
 
-    def restart(self):  # todo restart
+    def restart(self):
         self.currPlayer = self.player1
         self.passCounter = 0
         self.board = Board(self.window, self, Square, self.squaresNum, self.squareSize)
@@ -156,7 +171,6 @@ class Game(abcGame):
         self.switchPlayers()
 
     def gameOver(self) -> str:
-        '''Checks if the game is over. If it is, it returns a winner'''
         if not self.board.freeSquares or self.passCounter == 2:
             evaluate = self.coinParityHeur.eval(self.board.squares)
             if evaluate > 0:
@@ -167,22 +181,21 @@ class Game(abcGame):
                 return "Draw"
         return ''
 
-    def evaluate(self) -> float:
+    def evaluate(self) -> int:
         if self.currPlayer is self.player1:
             if self.settings.getHeurP1() == 0:
-                value = self.coinParityHeur.eval(self.board.squares)
+                return self.coinParityHeur.eval(self.board.squares)
             elif self.settings.getHeurP1() == 1:
-                value = self.weightsHeur.eval(self.board.squares)
+                return self.weightsHeur.eval(self.board.squares)
             else:
-                value = self.mobility.eval(self)
+                return self.mobility.eval(self)
         else:
             if self.settings.getHeurP2() == 0:
-                value = self.coinParityHeur.eval(self.board.squares)
+                return self.coinParityHeur.eval(self.board.squares)
             elif self.settings.getHeurP2() == 1:
-                value = self.weightsHeur.eval(self.board.squares)
+                return self.weightsHeur.eval(self.board.squares)
             else:
-                value = self.mobility.eval(self)
-        return value
+                return self.mobility.eval(self)
 
     def _getFlipsHorVer(self, row, col, src, init, dst, step=1):
         candidates = []
@@ -212,30 +225,37 @@ class Game(abcGame):
             offset += 1
         return []
 
-    def _getFlips(self, move: Move):
+    def _getFlips(self, move: Move, booleanOutput=False):
         '''This method returns a list of taken squares that should change color after the move.'''
         candsE = self._getFlipsHorVer(move.x, None, move.y, 1, self.board.size, 1)
+        if booleanOutput and candsE: return True
         candsW = self._getFlipsHorVer(move.x, None, move.y, -1, -1, -1)
+        if booleanOutput and candsW: return True
         candsN = self._getFlipsHorVer(None, move.y, move.x, -1, -1, -1)
+        if booleanOutput and candsN: return True
         candsS = self._getFlipsHorVer(None, move.y, move.x, 1, self.board.size, 1)
+        if booleanOutput and candsS: return True
         candsNE = self._getFlipsDiag(move.x, move.y, -1, 1, lambda a, b, c: a + b * c >= 0,
                                      lambda a, b, c: a + b * c < self.board.size)
+        if booleanOutput and candsNE: return True
         candsSE = self._getFlipsDiag(move.x, move.y, 1, 1, lambda a, b, c: a + b * c < self.board.size,
                                      lambda a, b, c: a + b * c < self.board.size)
+        if booleanOutput and candsSE: return True
         candsSW = self._getFlipsDiag(move.x, move.y, 1, -1, lambda a, b, c: a + b * c < self.board.size,
                                      lambda a, b, c: a + b * c >= 0)
+        if booleanOutput and candsSW: return True
         candsNW = self._getFlipsDiag(move.x, move.y, -1, -1, lambda a, b, c: a + b * c >= 0,
                                      lambda a, b, c: a + b * c >= 0)
-        out = candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
-        return out
+        if booleanOutput: return len(candsNW) != 0
+
+        return candsE + candsW + candsN + candsS + candsNE + candsSE + candsSW + candsNW
 
     def updateState(self, move: Move = None, display: bool = True) -> None:
         for square in self._getFlips(move): self.board.updateSquare(square, display)
 
     def isLegalMove(self, move: Move) -> bool:
-        if self.board.getSquare(move.x, move.y).occupied():
-            return False
-        return len(self._getFlips(move)) != 0
+        if self.board.getSquare(move.x, move.y).occupied(): return False
+        return len(self._getFlips(move, booleanOutput=True)) != 0
 
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None, None, None, None)
@@ -244,7 +264,7 @@ class Game(abcGame):
         return new
 
 
-class CoinParity(abcHeuristic):  # optimize by map
+class CoinParity(abcHeuristic):
     def eval(self, *args) -> int:
         state = args[0]
         black = white = 0
@@ -259,9 +279,8 @@ class CoinParity(abcHeuristic):  # optimize by map
         return black - white
 
 
-class Weights(abcHeuristic):  # optimize by map
-    def __init__(self, *args, **kwargs):
-        super(Weights, self).__init__(*args, **kwargs)
+class Weights(abcHeuristic):
+    def __init__(self):
         self.weights = {}
         vals = '5 -3 2 2 2 2 -3 5 -3 -4 -1 -1 -1 -1 -4 -3 2 -1 1 0 0 1 -1 2 2 -1 0 1 1 0 -1 2 2 -1 0 1 1 0 -1 2 2 -1 1 0 0 1 -1 2 -3 -4 -1 -1 -1 -1 -4 -3 5 -3 2 2 2 2 -3 5'.split(
             ' ')[::-1]
@@ -284,7 +303,7 @@ class Weights(abcHeuristic):  # optimize by map
         return black - white
 
 
-class Mobility(abcHeuristic):  # optimize by map
+class Mobility(abcHeuristic):
     def eval(self, *args) -> int:
         game = args[0]
         temp = game.currPlayer

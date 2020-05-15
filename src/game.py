@@ -43,19 +43,11 @@ class Player:
         return f"Player: type={self.type}"
 
 
-class Move:
+class abcMove(ABC):
     def __init__(self, dest, player: Player = None, src=None):
         self.dest = dest
         self.src = src
         self.player = player
-
-    @property
-    def x(self):
-        return self.dest[0]
-
-    @property
-    def y(self):
-        return self.dest[1]
 
     def __repr__(self):
         return f"Move: dest={self.dest}, player={self.player.type}"
@@ -84,7 +76,7 @@ class abcBoard(ABC):
         return self.squares[x][y]
 
     @abstractmethod
-    def updateSquare(self, move: Move, display: bool = True) -> None:
+    def updateSquare(self, move: abcMove, display: bool = True) -> None:
         pass
 
     @abstractmethod
@@ -124,7 +116,7 @@ class abcGame(ABC):
         pass
 
     @abstractmethod
-    def commitMove(self, move: Move, display: bool = True) -> None:
+    def commitMove(self, move: abcMove, display: bool = True) -> None:
         pass
 
     @abstractmethod
@@ -132,15 +124,15 @@ class abcGame(ABC):
         pass
 
     @abstractmethod
-    def evaluate(self) -> float:
+    def evaluate(self) -> int:
         pass
 
     @abstractmethod
-    def isLegalMove(self, move: Move) -> bool:
+    def isLegalMove(self, move: abcMove) -> bool:
         pass
 
     @abstractmethod
-    def updateState(self, move: Move = None, display: bool = True) -> None:
+    def updateState(self, move: abcMove = None, display: bool = True) -> None:
         pass
 
     @abstractmethod

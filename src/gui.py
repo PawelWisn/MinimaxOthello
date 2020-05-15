@@ -1,7 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from src.game import Player, Settings
-from copy import deepcopy, copy
 
 
 class Square:
@@ -69,11 +68,11 @@ class Window(tk.Tk):
         win = tk.Toplevel()
         win.wm_title("Game Over")
         l = tk.Label(win, text='The winner is: ' + winner)
-        l.grid(row=0,column=0)
-        b = tk.Button(win,text="OK",command=win.destroy)
-        b.grid(row=1,column=0)
+        l.grid(row=0, column=0)
+        b = tk.Button(win, text="OK", command=win.destroy)
+        b.grid(row=1, column=0)
 
-    def build(self):  # to optimize
+    def build(self):
         self.startButton = tk.Button(self, text='Start')
         self.startButton.grid(row=0, column=9, sticky=tk.W)
         self.restartButton = tk.Button(self, text='Restart')
@@ -94,14 +93,14 @@ class Window(tk.Tk):
         self.depthLabelP1.grid(row=2, column=9, sticky=tk.W)
         self.depthVarP1 = tk.StringVar()
         self.depthInputP1 = tk.Entry(self, width=6, textvariable=self.depthVarP1)
-        self.depthVarP1.set('3')
+        self.depthVarP1.set('5')
         self.depthInputP1.grid(row=2, column=10, sticky=tk.W)
 
         self.depthLabelP2 = tk.Label(self, text="Depth AI 2:")
         self.depthLabelP2.grid(row=3, column=9, sticky=tk.W)
         self.depthVarP2 = tk.StringVar()
         self.depthInputP2 = tk.Entry(self, width=6, textvariable=self.depthVarP2)
-        self.depthVarP2.set('3')
+        self.depthVarP2.set('5')
         self.depthInputP2.grid(row=3, column=10, sticky=tk.W)
 
         self.abVarP1 = tk.IntVar()
