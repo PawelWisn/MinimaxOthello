@@ -26,10 +26,11 @@ class Minimax:
             return self.getWinnerValue(game, winner)
         if depth == 0:
             return game.evaluate()
+
         moves = game.getPossibleMoves()
         if maximizing:
             if moves:
-                if alpha is not None:
+                if alpha is not None:  # alpha beta
                     for move in moves:
                         copy = deepcopy(game)
                         copy.commitMove(move, display=False)
@@ -38,19 +39,21 @@ class Minimax:
                         alpha = max(alpha, value)
                         if alpha >= beta: break
                     value = alpha
-                else:
+                else:  # minimax
                     value = -self.inf
                     for move in moves:
                         copy = deepcopy(game)
                         copy.commitMove(move, display=False)
-                        value = max(value, self.search(copy, depth - 1, False))
-                        if depth == self.depth: self.moveDict[move] = value
+                        newValue = self.search(copy, depth - 1, False)
+                        if depth == self.depth: self.moveDict[move] = newValue
+                        value = max(value, newValue)
+
             else:
                 game.handlePass()
                 value = self.search(game, depth - 1, False, alpha, beta)
         else:
             if moves:
-                if alpha is not None:
+                if alpha is not None:  # alpha beta
                     for move in moves:
                         copy = deepcopy(game)
                         copy.commitMove(move, display=False)
@@ -59,14 +62,14 @@ class Minimax:
                         beta = min(beta, value)
                         if alpha >= beta: break
                     value = beta
-
-                else:
+                else:  # minimax
                     value = self.inf
                     for move in moves:
                         copy = deepcopy(game)
                         copy.commitMove(move, display=False)
-                        value = min(value, self.search(copy, depth - 1, True))
-                        if depth == self.depth: self.moveDict[move] = value
+                        newValue = self.search(copy, depth - 1, True)
+                        if depth == self.depth: self.moveDict[move] = newValue
+                        value = min(value, newValue)
             else:
                 game.handlePass()
                 value = self.search(game, depth - 1, True, alpha, beta)

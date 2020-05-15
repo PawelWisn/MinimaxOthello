@@ -1,12 +1,8 @@
-from src.game import abcMove, abcHeuristic, abcGame, abcBoard, Player
+from src.game import abcMove, abcHeuristic, abcGame, abcBoard
 from src.minimax import Minimax
 from copy import deepcopy
 from src.gui import Square
 import threading
-from time import time
-import matplotlib.pyplot as plt
-
-winners = {'Black': 0, 'White': 0, 'Draw': 0}  # test
 
 
 class Move(abcMove):
@@ -74,13 +70,10 @@ class Game(abcGame):
         print("next player:", self.currPlayer.type, '\n')
 
     def _start(self):
-        statistics = []  # test
-        statistics_black = []  # test
-        statistics_white = []  # test
         mode = self.settings.getMode()
-        if mode == 0:
+        if mode == 0:  # PvsP
             pass
-        elif mode == 1:
+        elif mode == 1:  # PvsAI
             move = Minimax(self).getBestMove()
             if move is None:
                 self.handlePass()
@@ -93,47 +86,17 @@ class Game(abcGame):
                 if not self.getPossibleMoves():
                     self.handlePass()
                     self.start()
-        elif mode == 2:
+        elif mode == 2:  # AIvsAI
             if self.settings.getMode() == 2:
-                gamestart = time()
                 while True:
-                    start = time()  # test
                     move = Minimax(self).getBestMove()
-                    statistics.append(time() - start)  # test
-                    if self.currPlayer is self.player1:  # test
-                        statistics_black.append(time() - start)  # test
-                    else:
-                        statistics_white.append(time() - start)  # test
-                    # print(move, ', time=', time() - start)  # test
                     if move is None:
                         self.handlePass()
                     else:
-                        if isinstance(move, int): print(move)
                         self.commitMove(move)
                     if (winner := self.gameOver()):
-                        print("Game length:", time() - gamestart)
                         print("GAME OVER - The winner is:", winner)
-                        winners[winner] += 1  # test
-                        print(winners)  # test
-                        self.restart()  # test
-                        print('MC=', Minimax.mC)
-                        Minimax.mC = 0
-                        # if sum(winners.values()) < 25:
-                        #     self.start()  # test
-                        # else:
-                        #     winners['Black'] = 0
-                        #     winners['White'] = 0
-                        #     winners['Draw'] = 0
                         break
-                # plt.plot([x for x in range(len(statistics_black))], statistics_black, label="Minimax",
-                #          color='green')  # test
-                # plt.plot([x for x in range(len(statistics_white))], statistics_white,
-                #          label="Alpha-beta pruning", color='orange')  # test
-                # plt.legend()
-                # plt.title('Average time per move for depth = 3')
-                # plt.xlabel('Ply number')
-                # plt.ylabel('Time [s]')
-                # plt.show()  # test
 
     def start(self):
         '''Runs another thread so that progress is visible on gui'''
@@ -152,7 +115,7 @@ class Game(abcGame):
     def switchPlayers(self) -> None:
         self.currPlayer = self.player1 if self.currPlayer is self.player2 else self.player2
 
-    def getPossibleMoves(self) -> list:  ##
+    def getPossibleMoves(self) -> list:
         legalMoves = []
         for freeSquare in self.board.freeSquares:
             move = Move((freeSquare.x, freeSquare.y), self.currPlayer)
@@ -255,7 +218,7 @@ class Game(abcGame):
 
     def isLegalMove(self, move: Move) -> bool:
         if self.board.getSquare(move.x, move.y).occupied(): return False
-        return len(self._getFlips(move, booleanOutput=True)) != 0
+        return self._getFlips(move, booleanOutput=True)
 
     def __deepcopy__(self, memodict={}):
         new = self.__class__(None, None, None, None, None, None, None, None)
