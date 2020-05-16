@@ -96,6 +96,7 @@ class Game(abcGame):
                         self.commitMove(move)
                     if (winner := self.gameOver()):
                         print("GAME OVER - The winner is:", winner)
+                        self.window.showWinnerPopup(winner)
                         break
 
     def start(self):
