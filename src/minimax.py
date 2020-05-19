@@ -17,7 +17,9 @@ class Minimax:
         bestScore = -self.inf if maximizing else self.inf
         bestMovesArr = []
         for move in self.game.getPossibleMoves():
-            score = self.search(self.game, self.depth, maximizing, self.alpha, self.beta)
+            copy = deepcopy(self.game)
+            copy.commitMove(move, display=False)
+            score = self.search(copy, self.depth, maximizing, self.alpha, self.beta)
             if (maximizing and score > bestScore) or (not maximizing and score < bestScore):
                 bestScore = score
                 bestMovesArr = [move]
